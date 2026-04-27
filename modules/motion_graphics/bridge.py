@@ -141,14 +141,10 @@ def render_template(
     out = Path(output_mp4).resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
 
-    with tempfile.NamedTemporaryFile(suffix=".html", delete=False, mode="w", encoding="utf-8") as f:
-        f.write(html)
-        tmp_html = Path(f.name)
-
-    try:
-        _run_hyperframes(tmp_html, out, duration=duration, fps=fps, width=width, height=height)
-    finally:
-        tmp_html.unlink(missing_ok=True)
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_html = Path(tmp_dir) / "index.html"
+        tmp_html.write_text(html, encoding="utf-8")
+        _run_hyperframes(Path(tmp_dir), out, duration=duration, fps=fps, width=width, height=height)
 
     return str(out)
 
