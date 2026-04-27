@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "sources": {
+    "v1": "/home/khalid/editing-workspace/Iceq Studio/Video Projects/video testing/WhatsApp Video 2026-04-27 at 5.08.06 PM.mp4"
+  },
+  "ranges": [
+    {
+      "source": "v1",
+      "start": 0.22,
+      "end": 5.10,
+      "beat": "HOOK",
+      "quote": "We're testing i6 Studio. So today, we're going to talk about Gemma 4.",
+      "reason": "Clean intro, stops before mistake."
+    },
+    {
+      "source": "v1",
+      "start": 8.40,
+      "end": 21.40,
+      "beat": "BODY",
+      "quote": "Gemma 4 is an AI model made by Google... adaptive models and whatever.",
+      "reason": "Main content, removed false starts and fillers."
+    },
+    {
+      "source": "v1",
+      "start": 21.80,
+      "end": 26.40,
+      "beat": "OUTRO",
+      "quote": "And by the way, this video is absolutely edited with i6 Studio. Thank you.",
+      "reason": "Clean outro."
+    }
+  ],
+  "grade": "neutral_punch",
+  "overlays": [
+    {
+      "file": "animations/slot_lt1/render.mp4",
+      "start_in_output": 0.5,
+      "duration": 4.0
+    },
+    {
+      "file": "animations/slot_tc1/render.mp4",
+      "start_in_output": 7.0,
+      "duration": 5.0
+    },
+    {
+      "file": "animations/slot_end1/render.mp4",
+      "start_in_output": 17.5,
+      "duration": 4.0
+    }
+  ],
+  "subtitles": null
+}

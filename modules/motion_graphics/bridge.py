@@ -141,10 +141,17 @@ def render_template(
     out = Path(output_mp4).resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
 
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        tmp_html = Path(tmp_dir) / "index.html"
+    tmp_dir = out.parent / "tmp_render"
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        tmp_html = tmp_dir / "index.html"
         tmp_html.write_text(html, encoding="utf-8")
-        _run_hyperframes(Path(tmp_dir), out, duration=duration, fps=fps, width=width, height=height)
+        # Ensure Docker can read it
+        tmp_dir.chmod(0o777)
+        tmp_html.chmod(0o666)
+        _run_hyperframes(tmp_dir, out, duration=duration, fps=fps, width=width, height=height)
+    finally:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
 
     return str(out)
 

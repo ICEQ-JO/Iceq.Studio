@@ -11,14 +11,12 @@
             "id": "726ff0ff0563e769",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "video",
               "state": {
-                "file": "Video Production Dashboard.md",
-                "mode": "source",
-                "source": false
+                "file": "Video Projects/video testing/edit/final.mp4"
               },
               "icon": "lucide-file",
-              "title": "Video Production Dashboard"
+              "title": "final"
             }
           }
         ]
@@ -185,29 +183,32 @@
   },
   "active": "726ff0ff0563e769",
   "lastOpenFiles": [
-    "Welcome.md",
+    "Video Projects/video testing/edit/base.mp4",
+    "Video Projects/video testing/edit/edit/verify/final_3.00-6.00.png",
+    "Video Projects/video testing/edit/edit/verify/final_16.00-19.00.png",
+    "Video Projects/video testing/edit/final.prenorm.mp4",
+    "Video Projects/video testing/edit/_concat.txt",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/video-only.mp4",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/captured-frames/frame_000149.jpg",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/captured-frames/frame_000148.jpg",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/captured-frames/frame_000147.jpg",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/captured-frames/frame_000146.jpg",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/captured-frames/frame_000145.jpg",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/captured-frames/frame_000144.jpg",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/captured-frames/frame_000143.jpg",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/captured-frames/frame_000142.jpg",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/worker-5",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/worker-4",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/worker-3",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/worker-2",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/worker-1",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/worker-0",
+    "Video Projects/video testing/edit/animations/slot_end1/work-c4b356a0-b7b0-4786-816d-ca69ef35a698/captured-frames",
+    "Video Projects/video testing/edit/project.md",
+    "Video Projects/video testing/edit/takes_packed.md",
     "Video Production Dashboard.md",
-    "video testing/edit/animations/slot_glassy1/render.webm",
-    "video testing/edit/base_preview.mp4",
-    "video testing/edit/preview.mp4",
+    "Welcome.md",
     "video testing/edit/project.md",
-    "video testing/edit/_concat.txt",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/video-only.webm",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/captured-frames/frame_000143.png",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/captured-frames/frame_000142.png",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/captured-frames/frame_000141.png",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/captured-frames/frame_000140.png",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/captured-frames/frame_000139.png",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/captured-frames/frame_000138.png",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/captured-frames/frame_000137.png",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/captured-frames/frame_000134.png",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/captured-frames/frame_000136.png",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/captured-frames/frame_000132.png",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/worker-5",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/worker-4",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/worker-3",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/worker-2",
-    "video testing/edit/animations/slot_glassy1/work-6a0fb646-26d3-49cd-8f8f-d673dd4189e9/worker-1",
     "video testing/edit/takes_packed.md"
   ]
 }
