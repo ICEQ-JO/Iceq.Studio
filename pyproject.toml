@@ -1,0 +1,40 @@
+[project]
+name = "editing-workspace"
+version = "0.1.0"
+description = "Open-source AI video editing workspace — edit videos, generate motion graphics, captions, timestamps, and thumbnails with any coding agent."
+requires-python = ">=3.11"
+license = { text = "MIT" }
+
+dependencies = [
+  # video-use core deps
+  "requests>=2.31",
+  "librosa>=0.10",
+  "matplotlib>=3.8",
+  "pillow>=10.0",
+  "numpy>=1.26",
+  # caption & description generation
+  "openai>=1.23",
+  "anthropic>=0.20",
+  "python-dotenv>=1.0",
+  # CLI utilities
+  "typer>=0.12",
+  "rich>=13.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "mypy"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends.legacy:build"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["modules*"]

@@ -1,0 +1,48 @@
+# Environment
+.env
+*.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.uv/
+*.egg
+
+# Node
+node_modules/
+.pnpm-store/
+
+# Editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Project outputs (never commit rendered videos or user footage)
+*/edit/
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.wav
+*.mp3
+*.srt
+!examples/**/*.example.json
+
+# Thumbnails output
+*.thumb.jpg
+*.thumb.png
+
+# HyperFrames build/cache
+.hyperframes/
+packages/*/dist/
+
+# secrets
+*.pem
+*.key
