@@ -6,7 +6,7 @@ description: >
   and create thumbnails — all via conversation with a coding agent.
 ---
 
-# Editing Workspace — Agent Instructions
+# Iceq Studio — Agent Instructions
 
 **Read this file at the start of every session.**
 
@@ -132,7 +132,7 @@ On the first message of each session, or when starting a new video project:
 ## Setup (if not already done)
 
 ```bash
-cd /path/to/editing-workspace
+cd /path/to/Iceq.Studio
 ./scripts/setup.sh
 ```
 

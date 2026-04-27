@@ -1,126 +1,88 @@
-# 🎬 Editing Workspace
+# 🎬 Iceq Studio 
 
-> **An open-source AI video editing workspace.**  
-> Drop raw footage in a folder. Describe what you want. Get a fully edited, color-graded, motion-graphics-enhanced video back — plus captions, timestamps, and thumbnails — all without touching a timeline.
+> **Your Open-Source AI Video Editing "Second Brain"**  
+> We're revolutionizing how video editing scales. Drop raw footage into your folder. Open Obsidian or your code editor. Describe your edit in plain text. Get a fully cut, color-graded, motion-graphics-enhanced video back — plus captions, chapter timestamps, and thumbnails — **all without ever touching a video timeline.**
+
+Iceq Studio is a completely open-source architecture that bridges LLM coding agents, Python scripting, headless browser rendering, and your Obsidian knowledge-base into a seamless video production pipeline.
 
 ---
 
-## What this workspace does
+## What makes Iceq Studio different?
 
-| Capability | Tool |
+Unlike standard video editors, the interface here is **text**. You (or your AI agent) read the transcript in Obsidian, highlight or cross out sentences, and the engine handles the math to cut the video perfectly with sub-second audio crossfades.
+
+| Capability | Powered By |
 |---|---|
-| Cut, grade, and export video | `tools/video-use` (browser-use/video-use) |
-| High-grade HTML motion graphics | `tools/hyperframes` (heygen-com/hyperframes) |
-| Style-matched captions & descriptions | `modules/captions/` |
-| YouTube chapter timestamp structure | `modules/timestamps/` |
-| Thumbnail generation (frame + composite) | `modules/thumbnails/` |
+| Headless cutting & grade | `browser-use/video-use` (transcript → FFmpeg) |
+| Cinematic Motion Graphics | `heygen-com/hyperframes` (HTML/CSS → video) |
+| Obsidian Native Integration | Dataview & Custom YAML Dashboards |
+| AI Image Generations | Native Imagen 3 & DALL-E Compositing |
+| AI-Aware Style Captions | `modules/captions/` |
+| Deep YouTube Timestamps | `modules/timestamps/` |
 
 ---
 
-## Quick Start (Human)
+## ⚡ Quick Start
 
 ### 1. Clone & Setup
 ```bash
-git clone https://github.com/your-username/editing-workspace.git
-cd editing-workspace
+git clone https://github.com/ICEQ-JO/Iceq.Studio.git
+cd Iceq.Studio
 ./scripts/setup.sh
 ```
 
-`setup.sh` checks for Node ≥ 22, Python ≥ 3.11, and ffmpeg; installs all deps; and registers agent skills.
+*(Note: `setup.sh` checks for Node ≥ 22, Python ≥ 3.11, and ffmpeg; runs npm installs, and registers AI agent skills).*
 
-### 2. Add your API key
+### 2. Connect Your Second Brain (Obsidian)
+Turn your note-taking app into your editing suite:
 ```bash
 cp .env.example .env
-# Fill in ELEVENLABS_API_KEY (required)
-# Optionally add OPENAI_API_KEY for AI-powered captions
+# Fill in ELEVENLABS_API_KEY (required for auto-cutting)
+# Add your OPENAI_API_KEY for AI backgrounds / copy generation
+
+./scripts/link-obsidian.sh "/path/to/your/Obsidian Vault"
 ```
 
-### 3. Start a project
+### 3. Drop Footage
 ```bash
-./scripts/new-project.sh /path/to/your/footage
+./scripts/new-project.sh /path/to/your/raw/footage
 ```
+*(This automatically symlinks the heavy video files securely into your Obsidian Vault's `Video Projects` bucket without destroying your vault index.)*
 
-### 4. Open an agent and say:
-```
-Read AGENTS.md, then edit the footage in /path/to/your/footage into a final video.
-```
+### 4. Talk to your Agent
+Spin up GitHub Copilot, Cursor, or Claude Code right in the `Iceq.Studio` folder and simply say:
+> "Read AGENTS.md, then edit the footage in my recent project. Delete all the silence gaps and add a glassy iOS lower-third at the 10-second mark."
 
 ---
 
-## Quick Start (Coding Agent)
+## 🧠 The "Second Brain" Workflow
 
-```
-Read /path/to/editing-workspace/AGENTS.md first. Then follow the instructions there.
-```
-
-That's it. The workspace self-documents for agents.
+Iceq Studio treats your video like a living document:
+1. **Transcribe**: ElevenLabs creates a word-level diarized transcript.
+2. **Review**: You open Obsidian and see every sentence your speaker said.
+3. **Edit via Text**: Highlight the sentences you want to keep (`==like this==`). Strike out the ones you don't.
+4. **Compile**: The backend pulls your instructions, writes the edit decision list, cuts the 4K footage perfectly, applies a color grade, layers HTML-rendered motion graphics, and burns subtitles.
+5. **Publish**: Your Obsidian `Video Production Dashboard` is updated instantly with YouTube Timestamps, Instagram Captions matching your writing style, and the final MP4.
 
 ---
 
 ## Directory Map
 
 ```
-editing-workspace/
-├── AGENTS.md               ← Start here if you're an AI agent
-├── WORKSPACE.md            ← Detailed workspace reference
-├── skills/                 ← Agent skill files (auto-discovered)
-│   ├── workspace.md
-│   ├── video-editing.md
-│   ├── motion-graphics.md
-│   ├── captions.md
-│   ├── timestamps.md
-│   └── thumbnails.md
-├── tools/
-│   ├── video-use/          ← browser-use/video-use (transcript → FFmpeg)
-│   └── hyperframes/        ← heygen-com/hyperframes (HTML → video)
+Iceq.Studio/
+├── AGENTS.md               ← CRITICAL: The brain file for any AI Agent you use.
+├── WORKSPACE.md            ← Deep-dive technical reference on the engine.
+├── skills/                 ← Agent instruction files (auto-discovered)
+├── tools/                  
+│   ├── video-use/          ← The headless cutting engine
+│   └── hyperframes/        ← The headless animation engine
 ├── modules/
-│   ├── captions/           ← Style-aware caption & description generator
-│   ├── timestamps/         ← Full chapter timestamp builder
-│   ├── thumbnails/         ← Frame extractor + compositor
-│   └── motion_graphics/    ← Python ↔ HyperFrames bridge
-├── templates/              ← Reusable HyperFrames HTML motion graphic templates
-│   ├── lower-third.html
-│   ├── title-card.html
-│   ├── chapter-intro.html
-│   ├── end-screen.html
-│   └── subscribe-bump.html
-├── examples/               ← End-to-end worked examples
-│   ├── tutorial-video/
-│   └── talking-head/
-└── scripts/
-    ├── setup.sh
-    ├── new-project.sh
-    └── generate-all.sh
-```
-
----
-
-## Full Workflow (end-to-end)
-
-```
-Raw Footage
-    │
-    ▼  tools/video-use
-  Transcribe (ElevenLabs Scribe — word-level)
-    │
-    ▼
-  Agent reads transcript, converses with you, proposes edit strategy
-    │
-    ▼  tools/video-use + tools/hyperframes
-  Edit → Color Grade → Motion Graphics Overlays → Render final.mp4
-    │
-    ▼  modules/timestamps
-  Generate YouTube chapter timestamps
-    │
-    ▼  modules/captions
-  Generate title options, description, and captions in your writing style
-    │
-    ▼  modules/thumbnails
-  Extract best frame → Composite thumbnail (PIL or HyperFrames)
-    │
-    ▼
-  final.mp4 + timestamps.txt + description.md + thumbnail.png
-  → all in <footage_dir>/edit/
+│   ├── images/             ← AI Generation bridging (DALL-E & Gemini)
+│   ├── captions/           ← Style-aware social copy generators
+│   └── timestamps/         ← YouTube Structural builders
+├── dashboards/             ← Obsidian Dataview Kanban Templates
+├── templates/              ← Hackable HTML Motion Graphic layers
+└── scripts/                ← The glue
 ```
 
 ---
@@ -129,33 +91,22 @@ Raw Footage
 
 | Tool | Version | Purpose |
 |---|---|---|
-| Python | ≥ 3.11 | All modules + video-use helpers |
-| Node.js | ≥ 22 | HyperFrames CLI |
-| ffmpeg | ≥ 4.x | Video rendering |
-| ElevenLabs key | — | Transcription (required) |
-| OpenAI or Anthropic key | — | Caption generation (optional) |
+| Python | ≥ 3.11 | Control flow & ML bridging |
+| Node.js | ≥ 22 | HyperFrames HTML Studio |
+| ffmpeg | ≥ 4.x | Video processing & encode |
+| ElevenLabs | API Key | Sub-second word gap targeting |
 
 ---
 
 ## Contributing
 
-This is an open-source project. Feel free to:
-- Add new HyperFrames templates to `templates/`
-- Add new caption styles or platform targets to `modules/captions/`
-- Improve the timestamp generator heuristics in `modules/timestamps/`
-- Add example projects to `examples/`
+Iceq Studio is an ambitious open-source experiment to blur the lines between **Knowledge Management** and **Video Production**. 
 
-See `WORKSPACE.md` for architecture details.
+Want to build? Feel free to:
+- Add gorgeous CSS/HTML templates into `templates/` for motion graphics.
+- Expand our `modules/images/` to support Midjourney.
+- Submit Obsidian dashboard variants!
 
+*See `WORKSPACE.md` for architecture details.*
 ---
-
-## Upstream Projects
-
-- **video-use**: [github.com/browser-use/video-use](https://github.com/browser-use/video-use) — Apache 2.0
-- **HyperFrames**: [github.com/heygen-com/hyperframes](https://github.com/heygen-com/hyperframes) — Apache 2.0
-
----
-
-## License
-
-MIT
+*Built openly for creators, engineering teams, and AI Agent believers.*
