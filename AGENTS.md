@@ -80,13 +80,16 @@ After any editing session, the output directory looks like this:
 
 ## Cold-Start Checklist
 
-On the first message of each session:
+On the first message of each session, or when starting a new video project:
 
 1. Check if `edit/project.md` exists — if yes, read it and summarize the last session in one sentence. It may be part of an Obsidian Vault.
 2. If `takes_packed.md` is present, read it carefully. Look for Obsidian highlights like `==this text==` or `**bold text**` — the user has placed these to indicate sections they definitely want kept in the cut.
 3. Confirm that `ffmpeg` and `ffprobe` are on PATH: `ffmpeg -version`
 4. Confirm the ElevenLabs key resolves (from `.env` or environment).
-5. Ask the user what they want to accomplish today if it's not clear from the message.
+5. **CRITICAL:** Before taking any editing action, you MUST explicitly ask the user for their editing preferences. Ask them:
+   - "Do you want me to automatically delete silence moments or filler words?"
+   - "What motion graphics (lower thirds, title cards, subscribe bumps) should I add, and what colors/text should they have?"
+6. Only proceed to generate the EDL or render once the user has answered.
 
 ---
 
