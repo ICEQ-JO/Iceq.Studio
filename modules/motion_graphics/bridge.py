@@ -305,3 +305,98 @@ def add_subscribe_bump(
         output_mp4=_slot_path(output_dir, slot_id),
         duration=duration,
     )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# AI Background Integration
+# ─────────────────────────────────────────────────────────────────────────────
+
+def render_template_with_ai_bg(
+    template_path: str | Path,
+    vars: dict[str, str],
+    output_mp4: str | Path,
+    duration: float,
+    bg_prompt: str,
+    bg_backend: str = "auto",
+    bg_style: str = "motion_bg",
+    bg_quality: str = "standard",
+    fps: int = 30,
+    width: int = 1920,
+    height: int = 1080,
+    assets_dir: str | Path | None = None,
+) -> str:
+    """
+    Generate an AI background image, inject it into a HyperFrames template,
+    and render to MP4.
+
+    Instead of using a solid `bg-color`, this function:
+      1. Generates an AI image from `bg_prompt` using the specified backend
+      2. Passes the image path as `data-bg-image` to the template
+      3. Renders the full composition to MP4
+
+    This gives motion graphics a cinematic, AI-generated backdrop rather than
+    a plain solid colour.
+
+    Args:
+        template_path: Path to a templates/*.html file.
+        vars:          Template text variables (title, subtitle, etc.).
+                       Do NOT include bg-image — it's set automatically.
+        output_mp4:    Destination for the rendered clip.
+        duration:      Clip length in seconds.
+        bg_prompt:     Text prompt for the AI background image.
+                       The style_hint prefix is applied automatically.
+        bg_backend:    "openai" | "gemini" | "auto".
+        bg_style:      Style preset key (default: "motion_bg" — dark abstract textures).
+        bg_quality:    Quality for image generation (default: "standard").
+        fps, width, height: Render parameters.
+        assets_dir:    Where to save the generated background PNG.
+                       Defaults to the parent directory of output_mp4.
+
+    Returns:
+        Absolute path to the rendered MP4.
+
+    Example:
+        path = render_template_with_ai_bg(
+            template_path="templates/title-card.html",
+            vars={"title": "My Video Title", "subtitle": "The Full Story"},
+            output_mp4="edit/animations/slot_tc1/render.mp4",
+            duration=5.0,
+            bg_prompt="swirling dark smoke with deep blue and orange light streaks",
+            bg_backend="openai",
+            bg_style="motion_bg",
+        )
+    """
+    from ..images.generator import generate_image
+
+    out = Path(output_mp4).resolve()
+    bg_dir = Path(assets_dir) if assets_dir else out.parent / "assets"
+    bg_dir.mkdir(parents=True, exist_ok=True)
+
+    # Generate AI background (landscape 1920x1080 for motion graphics)
+    bg_paths = generate_image(
+        prompt=bg_prompt,
+        backend=bg_backend,
+        size="1024x1024",   # closest supported square; templates scale to fill
+        quality=bg_quality,
+        output_dir=bg_dir,
+        n=1,
+        style_hint=bg_style,
+    )
+
+    if not bg_paths:
+        raise RuntimeError("AI background generation returned no results.")
+
+    bg_path = bg_paths[0]
+
+    # Inject the background image path into template vars
+    merged_vars = {"bg-image": bg_path, **vars}
+
+    return render_template(
+        template_path=template_path,
+        vars=merged_vars,
+        output_mp4=output_mp4,
+        duration=duration,
+        fps=fps,
+        width=width,
+        height=height,
+    )

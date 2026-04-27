@@ -18,11 +18,12 @@ Module API:
 """
 
 from .extractor import extract_candidate_frames, pick_best_frame
-from .composer import compose_thumbnail_pil, compose_thumbnail_hyperframes
+from .composer import compose_thumbnail_pil, compose_thumbnail_hyperframes, compose_thumbnail_ai_bg
 
 __all__ = [
     "extract_candidate_frames",
     "pick_best_frame",
     "compose_thumbnail_pil",
     "compose_thumbnail_hyperframes",
+    "compose_thumbnail_ai_bg",
 ]

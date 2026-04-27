@@ -44,6 +44,7 @@ A fully self-contained editing environment for AI agents. You have access to:
 | Generate captions, titles, descriptions | `skills/captions.md` |
 | Build YouTube timestamp chapters | `skills/timestamps.md` |
 | Generate thumbnails | `skills/thumbnails.md` |
+| Generate AI images/backgrounds | `skills/image-generation.md` |
 | Understand the full workspace | `skills/workspace.md` |
 
 ---

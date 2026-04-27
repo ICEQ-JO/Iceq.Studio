@@ -224,6 +224,95 @@ def compose_thumbnail_hyperframes(
     return str(out)
 
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# AI Background Compositor
+# ─────────────────────────────────────────────────────────────────────────────
+
+def compose_thumbnail_ai_bg(
+    prompt: str,
+    title: str,
+    subtitle: str | None = None,
+    output_path: str | Path | None = None,
+    backend: str = "auto",
+    style: str = "thumbnail",
+    size: str = "1792x1024",
+    quality: str = "standard",
+    pil_style: dict | None = None,
+    assets_dir: str | Path | None = None,
+) -> str:
+    """
+    Generate an AI background image, then composite title text on top with PIL.
+
+    This is the fully AI-driven thumbnail path — no video frame extraction needed.
+    The generated background is saved to assets_dir alongside the final thumbnail.
+
+    Args:
+        prompt:      Text prompt for the AI background (e.g. "dark studio with neon lights").
+        title:       Main title text to composite on the thumbnail.
+        subtitle:    Optional subtitle below the title.
+        output_path: Where to save the final thumbnail PNG.
+                     Defaults to <assets_dir>/thumbnail.png.
+        backend:     Image generation backend: "openai" | "gemini" | "auto".
+        style:       Style preset from STYLE_PRESETS (default: "thumbnail").
+                     This prefix is prepended to the prompt automatically.
+        size:        Image size for the background (default: "1792x1024" — landscape).
+        quality:     Quality tier for the backend (default: "standard").
+        pil_style:   Optional PIL compositor style overrides (see compose_thumbnail_pil).
+        assets_dir:  Directory for intermediate generated images.
+                     Defaults to output_path's parent / "assets".
+
+    Returns:
+        Absolute path to the saved thumbnail PNG.
+
+    Example:
+        path = compose_thumbnail_ai_bg(
+            prompt="A developer at a glowing keyboard in a dark room",
+            title="How I Edit Videos with AI",
+            subtitle="Full Pipeline Explained",
+            backend="openai",
+            style="cinematic",
+            output_path="edit/thumbnail.png",
+        )
+    """
+    from ..images.generator import generate_image
+
+    if output_path is None:
+        if assets_dir:
+            output_path = Path(assets_dir) / "thumbnail.png"
+        else:
+            output_path = Path(".") / "thumbnail.png"
+
+    output_path = Path(output_path)
+    bg_dir = Path(assets_dir) if assets_dir else output_path.parent / "assets"
+    bg_dir.mkdir(parents=True, exist_ok=True)
+
+    # Generate background with AI
+    bg_paths = generate_image(
+        prompt=prompt,
+        backend=backend,
+        size=size,
+        quality=quality,
+        output_dir=bg_dir,
+        n=1,
+        style_hint=style,
+    )
+
+    if not bg_paths:
+        raise RuntimeError("Image generation returned no results.")
+
+    bg_path = bg_paths[0]
+
+    # Composite title text on the AI-generated background
+    return compose_thumbnail_pil(
+        base_frame=bg_path,
+        title=title,
+        subtitle=subtitle,
+        output_path=output_path,
+        style=pil_style,
+    )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # CLI entry point
 # ─────────────────────────────────────────────────────────────────────────────
