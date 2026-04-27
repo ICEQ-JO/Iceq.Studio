@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "sources": {
+    "CLIP_A": "/footage/interview/CLIP_A.mp4",
+    "CLIP_B": "/footage/interview/CLIP_B.mp4",
+    "CLIP_C": "/footage/interview/CLIP_C.mp4"
+  },
+  "ranges": [
+    {
+      "source": "CLIP_A",
+      "start": 2.80,
+      "end": 18.45,
+      "beat": "HOOK",
+      "quote": "The moment I realized everything I'd been doing was wrong was a Tuesday afternoon.",
+      "reason": "Best hook in all 3 clips. Energy peaks at 'Tuesday' — cut before breath at 18.6s."
+    },
+    {
+      "source": "CLIP_B",
+      "start": 24.10,
+      "end": 87.30,
+      "beat": "PROBLEM",
+      "quote": "We were shipping faster than ever, but nothing was landing...",
+      "reason": "Only take without background HVAC noise after 90s. Strong emotional delivery."
+    },
+    {
+      "source": "CLIP_A",
+      "start": 45.20,
+      "end": 72.80,
+      "beat": "SOLUTION",
+      "quote": "So I stopped doing everything I thought I knew, and started asking.",
+      "reason": "Clean delivery. Speaker looks directly at camera for the payoff line."
+    },
+    {
+      "source": "CLIP_C",
+      "start": 5.50,
+      "end": 34.20,
+      "beat": "CTA",
+      "quote": "If you're in the same place I was — just start. The clarity comes from doing.",
+      "reason": "Emotional close. Fade out naturally after 34.2s."
+    }
+  ],
+  "grade": "warm_cinematic",
+  "overlays": [
+    {
+      "file": "edit/animations/slot_lt1/render.mp4",
+      "start_in_output": 6.0,
+      "duration": 4.0,
+      "_note": "Lower-third: speaker name + title. Appears 6s in, after hook."
+    },
+    {
+      "file": "edit/animations/slot_sub1/render.mp4",
+      "start_in_output": 105.5,
+      "duration": 3.0,
+      "_note": "Subscribe bump appears in final 30s."
+    }
+  ],
+  "subtitles": "edit/master.srt",
+  "total_duration_s": 144.3,
+  "_note": "This is an example EDL — file paths are illustrative only."
+}

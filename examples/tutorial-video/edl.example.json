@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "sources": {
+    "INTRO_TAKE1": "/footage/tutorial/INTRO_TAKE1.mp4",
+    "SETUP_TAKE2": "/footage/tutorial/SETUP_TAKE2.mp4",
+    "DEMO_TAKE1":  "/footage/tutorial/DEMO_TAKE1.mp4",
+    "RECAP_TAKE1": "/footage/tutorial/RECAP_TAKE1.mp4"
+  },
+  "ranges": [
+    {
+      "source": "INTRO_TAKE1",
+      "start": 1.20,
+      "end": 12.85,
+      "beat": "HOOK",
+      "quote": "Today I'm going to show you exactly how to do this in under ten minutes.",
+      "reason": "Best delivery, no hesitation. Stops cleanly before false start at 13.2s."
+    },
+    {
+      "source": "SETUP_TAKE2",
+      "start": 3.40,
+      "end": 38.75,
+      "beat": "SETUP",
+      "quote": "First, make sure you have everything installed...",
+      "reason": "Take 2 avoids the stumble on 'dependencies' from Take 1."
+    },
+    {
+      "source": "DEMO_TAKE1",
+      "start": 5.00,
+      "end": 95.30,
+      "beat": "DEMO",
+      "quote": "And now watch what happens when we run this...",
+      "reason": "Only take with clean audio throughout. Laptop fan noise in take 2."
+    },
+    {
+      "source": "RECAP_TAKE1",
+      "start": 2.15,
+      "end": 28.60,
+      "beat": "RECAP",
+      "quote": "So today we covered installation, the config, and a live demo.",
+      "reason": "Crisp summary, natural energy, good face at end for thumbnail."
+    }
+  ],
+  "grade": "neutral_punch",
+  "overlays": [
+    {
+      "file": "edit/animations/slot_tc1/render.mp4",
+      "start_in_output": 0.0,
+      "duration": 5.0,
+      "_note": "Title card: 'How to Do X in 10 Minutes'"
+    },
+    {
+      "file": "edit/animations/slot_ch1/render.mp4",
+      "start_in_output": 11.65,
+      "duration": 3.0,
+      "_note": "Chapter intro: 'Setup'"
+    },
+    {
+      "file": "edit/animations/slot_ch2/render.mp4",
+      "start_in_output": 47.15,
+      "duration": 3.0,
+      "_note": "Chapter intro: 'Live Demo'"
+    }
+  ],
+  "subtitles": "edit/master.srt",
+  "total_duration_s": 131.8,
+  "_note": "This is an example EDL — file paths are illustrative only."
+}
