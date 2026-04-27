@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<!--
+  Template: title-card.html
+  Purpose: Full-screen animated title card with accent line reveal
+
+  HyperFrames Data Variables:
+    data-title        — Main title text (large, centered)
+    data-subtitle     — Secondary line below title (smaller, accent color)
+    data-accent-color — Accent line and subtitle color (hex, default #FF5A00)
+    data-bg-color     — Background color (hex, default #0A0A0A)
+    data-font         — Font family (default Inter)
+    data-duration     — Total clip duration in seconds
+
+  Animation timeline:
+    0.0 – 0.4s  Background + title fade in (ease-out)
+    0.4 – 0.7s  Accent line draws in from left → right
+    0.7 – 0.9s  Subtitle fades in
+    Hold…       All elements at full opacity
+    -0.5s       Everything fades out
+
+  Usage in EDL overlays:
+    { "file": "edit/animations/slot_tc1/render.mp4",
+      "start_in_output": 0.0, "duration": 5.0 }
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Title Card</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: var(--bg-color, #0A0A0A);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font, 'Inter'), sans-serif;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      opacity: 0;
+    }
+
+    .title {
+      font-size: 96px;
+      font-weight: 700;
+      color: #FFFFFF;
+      text-align: center;
+      letter-spacing: -2px;
+      line-height: 1.05;
+      max-width: 1400px;
+    }
+
+    .accent-line {
+      height: 4px;
+      width: 0;
+      background: var(--accent-color, #FF5A00);
+      border-radius: 2px;
+      align-self: flex-start;
+      max-width: 1400px;
+    }
+
+    .subtitle {
+      font-size: 36px;
+      font-weight: 300;
+      color: var(--accent-color, #FF5A00);
+      text-align: center;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div
+    id="stage"
+    data-composition-id="title-card"
+    data-start="0"
+    data-width="1920"
+    data-height="1080"
+    data-duration="5"
+  ></div>
+
+  <div class="container" id="container">
+    <div class="title" id="title-text">My Video</div>
+    <div class="accent-line" id="accent-line"></div>
+    <div class="subtitle" id="subtitle-text"></div>
+  </div>
+
+  <script>
+    const stage = document.getElementById('stage');
+    const container = document.getElementById('container');
+    const titleEl = document.getElementById('title-text');
+    const accentLine = document.getElementById('accent-line');
+    const subtitleEl = document.getElementById('subtitle-text');
+
+    const title = stage.dataset.title || 'My Video';
+    const subtitle = stage.dataset.subtitle || '';
+    const accentColor = stage.dataset.accentColor || '#FF5A00';
+    const bgColor = stage.dataset.bgColor || '#0A0A0A';
+    const font = stage.dataset.font || 'Inter';
+    const totalDuration = parseFloat(stage.dataset.duration || '5') * 1000;
+
+    titleEl.textContent = title;
+    subtitleEl.textContent = subtitle;
+    document.documentElement.style.setProperty('--accent-color', accentColor);
+    document.documentElement.style.setProperty('--bg-color', bgColor);
+    document.documentElement.style.setProperty('--font', font);
+
+    // Measure title width for accent line
+    const titleWidth = Math.min(titleEl.scrollWidth, 1400);
+    accentLine.style.maxWidth = titleWidth + 'px';
+
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    const FADE_IN = 400;      // ms
+    const LINE_DRAW = 300;    // ms
+    const SUB_IN = 200;       // ms
+    const FADE_OUT = 500;     // ms
+    const HOLD = Math.max(totalDuration - FADE_IN - LINE_DRAW - SUB_IN - FADE_OUT, 500);
+
+    let startTime = null;
+    const phases = [
+      { start: 0, end: FADE_IN },
+      { start: FADE_IN, end: FADE_IN + LINE_DRAW },
+      { start: FADE_IN + LINE_DRAW, end: FADE_IN + LINE_DRAW + SUB_IN },
+      { start: FADE_IN + LINE_DRAW + SUB_IN, end: FADE_IN + LINE_DRAW + SUB_IN + HOLD },
+      { start: FADE_IN + LINE_DRAW + SUB_IN + HOLD, end: totalDuration },
+    ];
+
+    function animate(ts) {
+      if (!startTime) startTime = ts;
+      const e = ts - startTime;
+
+      // Phase 0 — container fade in
+      if (e <= phases[0].end) {
+        const t = easeOutCubic(e / phases[0].end);
+        container.style.opacity = t;
+      }
+
+      // Phase 1 — line draw
+      if (e >= phases[1].start && e <= phases[1].end) {
+        const t = easeOutCubic((e - phases[1].start) / (phases[1].end - phases[1].start));
+        accentLine.style.width = (titleWidth * t) + 'px';
+      }
+
+      // Phase 2 — subtitle fade in
+      if (subtitle && e >= phases[2].start && e <= phases[2].end) {
+        const t = easeOutCubic((e - phases[2].start) / (phases[2].end - phases[2].start));
+        subtitleEl.style.opacity = t;
+      }
+
+      // Phase 4 — fade out
+      if (e >= phases[4].start) {
+        const t = easeOutCubic(Math.min((e - phases[4].start) / FADE_OUT, 1));
+        container.style.opacity = 1 - t;
+        if (t >= 1) return;
+      }
+
+      if (e < totalDuration) requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>

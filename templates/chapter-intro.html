@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!--
+  Template: chapter-intro.html
+  Purpose: Centered chapter transition with number badge and name
+
+  HyperFrames Data Variables:
+    data-title        — Chapter name text (e.g. "The Problem")
+    data-subtitle     — Chapter number/prefix (e.g. "01" or "Chapter 1")
+    data-accent-color — Accent color for number badge and line (default #FF5A00)
+    data-bg-color     — Background color (default #0A0A0A)
+    data-duration     — Clip duration in seconds
+
+  Animation:
+    - Elements scale up from 90% + fade in (0–0.5s)
+    - Number badge with accent color slides in from left
+    - Chapter name letter-spacing expands (cinematic reveal)
+    - Hold, then fade out (last 0.4s)
+
+  Designed for 3s clips between video chapters.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chapter Intro</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;800&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: var(--bg-color, #0A0A0A);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      opacity: 0;
+      transform: scale(0.92);
+    }
+
+    .badge {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      color: var(--accent-color, #FF5A00);
+      border: 2px solid var(--accent-color, #FF5A00);
+      padding: 8px 24px;
+      border-radius: 2px;
+    }
+
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: var(--accent-color, #FF5A00);
+      transform: scaleX(0);
+    }
+
+    .chapter-name {
+      font-size: 80px;
+      font-weight: 800;
+      color: #FFFFFF;
+      text-align: center;
+      letter-spacing: -20px;  /* expands to 0 in animation */
+      opacity: 0;
+      max-width: 1400px;
+    }
+  </style>
+</head>
+<body>
+  <div
+    id="stage"
+    data-composition-id="chapter-intro"
+    data-start="0"
+    data-width="1920"
+    data-height="1080"
+    data-duration="3"
+  ></div>
+
+  <div class="wrapper" id="wrapper">
+    <div class="badge" id="badge-text">Chapter 1</div>
+    <div class="divider" id="divider"></div>
+    <div class="chapter-name" id="chapter-name">Introduction</div>
+  </div>
+
+  <script>
+    const stage = document.getElementById('stage');
+    const wrapper = document.getElementById('wrapper');
+    const badgeEl = document.getElementById('badge-text');
+    const divider = document.getElementById('divider');
+    const chapterNameEl = document.getElementById('chapter-name');
+
+    const title = stage.dataset.title || 'Introduction';
+    const subtitle = stage.dataset.subtitle || '';
+    const accent = stage.dataset.accentColor || '#FF5A00';
+    const bg = stage.dataset.bgColor || '#0A0A0A';
+    const total = parseFloat(stage.dataset.duration || '3') * 1000;
+
+    chapterNameEl.textContent = title;
+    badgeEl.textContent = subtitle || 'Chapter';
+    document.documentElement.style.setProperty('--accent-color', accent);
+    document.documentElement.style.setProperty('--bg-color', bg);
+
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    const IN = 500;
+    const HOLD = Math.max(total - IN - 400, 300);
+    const OUT = 400;
+
+    let t0 = null;
+    function animate(ts) {
+      if (!t0) t0 = ts;
+      const e = ts - t0;
+
+      if (e <= IN) {
+        const p = easeOutCubic(e / IN);
+        wrapper.style.opacity = p;
+        wrapper.style.transform = `scale(${0.92 + 0.08 * p})`;
+        divider.style.transform = `scaleX(${p})`;
+        chapterNameEl.style.opacity = p;
+        chapterNameEl.style.letterSpacing = `${-20 + 20 * p}px`;
+      } else if (e >= IN + HOLD) {
+        const p = easeOutCubic((e - IN - HOLD) / OUT);
+        wrapper.style.opacity = 1 - p;
+        if (p >= 1) return;
+      }
+
+      if (e < total) requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>

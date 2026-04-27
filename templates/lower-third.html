@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<!--
+  Template: lower-third.html
+  Purpose: Animated lower-third name plate with slide-in bar and text
+
+  HyperFrames Data Variables (set by bridge.py or manually):
+    data-title        — Main name line (large text)
+    data-subtitle     — Role/title line (small text below)
+    data-accent-color — Bar and underline accent color (hex, default #FF5A00)
+    data-bg-color     — Bar background color (hex, default rgba(10,10,10,0.85))
+    data-font         — Font family (default Inter)
+    data-duration     — Clip duration in seconds (set by renderer)
+
+  Design:
+    - Slides in from left (cubic ease-out, 0.6s)
+    - Name in white 48pt Bold
+    - Role in accent-colored 24pt Regular
+    - Left accent bar animates up simultaneously
+    - Holds for (duration - 1.2s), then fades out (0.3s)
+
+  Usage in EDL overlays:
+    { "file": "edit/animations/slot_lt1/render.mp4",
+      "start_in_output": 3.5, "duration": 4.0 }
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lower Third</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: transparent;
+      overflow: hidden;
+      font-family: var(--font, 'Inter'), sans-serif;
+    }
+
+    .lower-third {
+      position: absolute;
+      bottom: 120px;
+      left: 80px;
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      opacity: 0;
+      transform: translateX(-60px);
+    }
+
+    .accent-bar {
+      width: 6px;
+      background: var(--accent-color, #FF5A00);
+      border-radius: 3px;
+      transform: scaleY(0);
+      transform-origin: bottom;
+      margin-right: 20px;
+    }
+
+    .text-block {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: var(--bg-color, rgba(10,10,10,0.85));
+      padding: 16px 28px;
+      border-radius: 4px;
+    }
+
+    .name {
+      font-size: 48px;
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+
+    .role {
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--accent-color, #FF5A00);
+      line-height: 1.2;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div
+    id="stage"
+    data-composition-id="lower-third"
+    data-start="0"
+    data-width="1920"
+    data-height="1080"
+    data-duration="4"
+  >
+    <div class="lower-third" id="lt">
+      <div class="accent-bar" id="bar"></div>
+      <div class="text-block">
+        <div class="name" id="name-text">Name</div>
+        <div class="role" id="role-text">Title</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Read data attributes injected by the bridge
+    const stage = document.getElementById('stage');
+    const nameEl = document.getElementById('name-text');
+    const roleEl = document.getElementById('role-text');
+    const lt = document.getElementById('lt');
+    const bar = document.getElementById('bar');
+
+    const title = stage.dataset.title || 'Name';
+    const subtitle = stage.dataset.subtitle || '';
+    const accentColor = stage.dataset.accentColor || '#FF5A00';
+    const bgColor = stage.dataset.bgColor || 'rgba(10,10,10,0.85)';
+    const font = stage.dataset.font || 'Inter';
+    const totalDuration = parseFloat(stage.dataset.duration || '4') * 1000;
+
+    // Apply dynamic values
+    nameEl.textContent = title;
+    roleEl.textContent = subtitle;
+    document.documentElement.style.setProperty('--accent-color', accentColor);
+    document.documentElement.style.setProperty('--bg-color', bgColor);
+    document.documentElement.style.setProperty('--font', font);
+
+    // Easing functions
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+    function easeInCubic(t) { return t * t * t; }
+
+    const SLIDE_IN = 600;     // ms — slide in
+    const HOLD = Math.max(totalDuration - SLIDE_IN - 400, 500);
+    const FADE_OUT = 400;     // ms — fade out
+
+    let startTime = null;
+
+    function animate(ts) {
+      if (!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+
+      if (elapsed <= SLIDE_IN) {
+        // Phase 1: slide in + bar grow
+        const t = easeOutCubic(elapsed / SLIDE_IN);
+        lt.style.opacity = t;
+        lt.style.transform = `translateX(${(1 - t) * -60}px)`;
+        bar.style.transform = `scaleY(${t})`;
+
+      } else if (elapsed <= SLIDE_IN + HOLD) {
+        // Phase 2: hold
+        lt.style.opacity = 1;
+        lt.style.transform = 'translateX(0)';
+        bar.style.transform = 'scaleY(1)';
+
+      } else if (elapsed <= SLIDE_IN + HOLD + FADE_OUT) {
+        // Phase 3: fade out
+        const t = easeInCubic((elapsed - SLIDE_IN - HOLD) / FADE_OUT);
+        lt.style.opacity = 1 - t;
+      } else {
+        lt.style.opacity = 0;
+        return; // done
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!--
+  Template: end-screen.html
+  Purpose: YouTube-style end screen with subscribe CTA and social links
+
+  HyperFrames Data Variables:
+    data-title        — Channel/creator name
+    data-subtitle     — CTA text (e.g. "Subscribe for more")
+    data-accent-color — Highlight color (default #FF0000)
+    data-bg-color     — Background overlay color (default rgba(10,10,10,0.92))
+    data-duration     — Clip duration in seconds (recommend 15–20s for YouTube end screens)
+
+  Design:
+    - Dark overlay background
+    - Large subscribe button (animated, pulsing)
+    - Bell icon animation
+    - Creator name and CTA text
+    - Social media icon row (placeholders — customise per creator)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>End Screen</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: var(--bg-color, rgba(10,10,10,0.92));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    .creator {
+      font-size: 36px;
+      font-weight: 400;
+      color: #AAA;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0;
+    }
+
+    .subscribe-btn {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--accent-color, #FF0000);
+      color: #FFF;
+      padding: 28px 64px;
+      border-radius: 8px;
+      cursor: pointer;
+      opacity: 0;
+      transform: scale(0.85);
+    }
+
+    .subscribe-btn .bell {
+      font-size: 52px;
+      animation: ring 1.5s ease-in-out infinite;
+      transform-origin: top center;
+    }
+
+    @keyframes ring {
+      0%, 100% { transform: rotate(0deg); }
+      10% { transform: rotate(-15deg); }
+      20% { transform: rotate(15deg); }
+      30% { transform: rotate(-10deg); }
+      40% { transform: rotate(10deg); }
+      50% { transform: rotate(0deg); }
+    }
+
+    .subscribe-btn .label {
+      font-size: 56px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .cta-text {
+      font-size: 32px;
+      font-weight: 400;
+      color: #CCC;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div
+    id="stage"
+    data-composition-id="end-screen"
+    data-start="0"
+    data-width="1920"
+    data-height="1080"
+    data-duration="15"
+  ></div>
+
+  <div class="creator" id="creator-name">Channel Name</div>
+  <div class="subscribe-btn" id="subscribe-btn">
+    <span class="bell">🔔</span>
+    <span class="label" id="label-text">Subscribe</span>
+  </div>
+  <div class="cta-text" id="cta-text">New videos every week</div>
+
+  <script>
+    const stage = document.getElementById('stage');
+    const creatorEl = document.getElementById('creator-name');
+    const btnEl = document.getElementById('subscribe-btn');
+    const labelEl = document.getElementById('label-text');
+    const ctaEl = document.getElementById('cta-text');
+
+    const title = stage.dataset.title || 'Channel Name';
+    const subtitle = stage.dataset.subtitle || 'Subscribe for more';
+    const accent = stage.dataset.accentColor || '#FF0000';
+    const bg = stage.dataset.bgColor || 'rgba(10,10,10,0.92)';
+    const total = parseFloat(stage.dataset.duration || '15') * 1000;
+
+    creatorEl.textContent = title;
+    ctaEl.textContent = subtitle;
+    document.documentElement.style.setProperty('--accent-color', accent);
+    document.documentElement.style.setProperty('--bg-color', bg);
+
+    function easeOutBack(t) {
+      const c1 = 1.70158;
+      const c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    }
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    const IN = 800;
+    const OUT = 600;
+    let t0 = null;
+
+    function animate(ts) {
+      if (!t0) t0 = ts;
+      const e = ts - t0;
+
+      if (e <= IN) {
+        const p = easeOutCubic(e / IN);
+        const pBack = easeOutBack(Math.min(e / (IN * 0.7), 1));
+        creatorEl.style.opacity = p;
+        btnEl.style.opacity = Math.min(e / IN * 1.5, 1);
+        btnEl.style.transform = `scale(${0.85 + 0.15 * pBack})`;
+        ctaEl.style.opacity = Math.max(0, (e - IN * 0.5) / (IN * 0.5));
+      }
+
+      if (e >= total - OUT) {
+        const p = easeOutCubic((e - (total - OUT)) / OUT);
+        document.body.style.opacity = 1 - p;
+      }
+
+      if (e < total) requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>

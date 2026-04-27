@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<!--
+  Template: subscribe-bump.html
+  Purpose: Corner subscribe bump animation (bell + label, 3s)
+
+  HyperFrames Data Variables:
+    data-title        — Button label text (default "Subscribe")
+    data-accent-color — Button background color (default #FF0000)
+    data-duration     — Clip duration in seconds (default 3s)
+
+  Design:
+    - Appears in bottom-right corner
+    - Slides up and fades in (0.4s)
+    - Bell rings twice
+    - Holds, then slides down and fades out (0.3s)
+
+  Usage in EDL:
+    { "file": "edit/animations/slot_sub1/render.mp4",
+      "start_in_output": 45.0, "duration": 3.0 }
+    
+    Position overlay in a corner — use EDL x/y offset if your render.py supports it,
+    or pre-position in this composition (bottom-right by default).
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Subscribe Bump</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+
+    .bump {
+      position: absolute;
+      bottom: 100px;
+      right: 100px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--accent-color, #FF0000);
+      color: #FFF;
+      padding: 18px 36px;
+      border-radius: 50px;
+      opacity: 0;
+      transform: translateY(20px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .bell {
+      font-size: 32px;
+      display: inline-block;
+      transform-origin: top center;
+    }
+
+    .ring {
+      animation: ring 0.4s ease-in-out 2;
+    }
+
+    @keyframes ring {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-18deg); }
+      75% { transform: rotate(18deg); }
+    }
+
+    .label {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div
+    id="stage"
+    data-composition-id="subscribe-bump"
+    data-start="0"
+    data-width="1920"
+    data-height="1080"
+    data-duration="3"
+  ></div>
+
+  <div class="bump" id="bump">
+    <span class="bell" id="bell">🔔</span>
+    <span class="label" id="label-text">Subscribe</span>
+  </div>
+
+  <script>
+    const stage     = document.getElementById('stage');
+    const bump      = document.getElementById('bump');
+    const bell      = document.getElementById('bell');
+    const labelEl   = document.getElementById('label-text');
+
+    const label   = stage.dataset.title || 'Subscribe';
+    const accent  = stage.dataset.accentColor || '#FF0000';
+    const total   = parseFloat(stage.dataset.duration || '3') * 1000;
+
+    labelEl.textContent = label;
+    document.documentElement.style.setProperty('--accent-color', accent);
+
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+    function easeInCubic(t) { return t * t * t; }
+
+    const IN   = 400;
+    const HOLD = Math.max(total - IN - 300, 200);
+    const OUT  = 300;
+
+    let t0 = null;
+    let bellRung = false;
+
+    function animate(ts) {
+      if (!t0) t0 = ts;
+      const e = ts - t0;
+
+      if (e <= IN) {
+        const p = easeOutCubic(e / IN);
+        bump.style.opacity = p;
+        bump.style.transform = `translateY(${20 - 20 * p}px)`;
+      } else if (e <= IN + HOLD) {
+        bump.style.opacity = 1;
+        bump.style.transform = 'translateY(0)';
+        if (!bellRung) {
+          bell.classList.add('ring');
+          bellRung = true;
+        }
+      } else {
+        const p = easeInCubic((e - IN - HOLD) / OUT);
+        bump.style.opacity = 1 - p;
+        bump.style.transform = `translateY(${20 * p}px)`;
+        if (p >= 1) return;
+      }
+
+      if (e < total) requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
