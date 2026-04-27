@@ -96,6 +96,29 @@ if [ -n "$VIDEO" ]; then
     || echo "⚠️  Thumbnail generation failed (check Pillow is installed)"
 fi
 
+# ── 4. Obsidian Sync ────────────────────────────────────────────────────────────
+
+echo "── Obsidian Sync ──────────────────────────────────────────────────────"
+if [ -f "$EDIT_DIR/takes_packed.md" ]; then
+  # Inject frontmatter if it doesn't exist
+  if ! grep -q '^type: transcript' "$EDIT_DIR/takes_packed.md"; then
+    TMP_TRANSCRIPT=$(mktemp)
+    cat > "$TMP_TRANSCRIPT" << EOF
+---
+type: transcript
+status: completed
+date: $(date '+%Y-%m-%d')
+tags: [video/transcript]
+---
+EOF
+    cat "$EDIT_DIR/takes_packed.md" >> "$TMP_TRANSCRIPT"
+    mv "$TMP_TRANSCRIPT" "$EDIT_DIR/takes_packed.md"
+    echo "  ✅ Injected Obsidian Frontmatter into takes_packed.md"
+  else
+    echo "  ℹ️  takes_packed.md already has frontmatter"
+  fi
+fi
+
 # ── Summary ───────────────────────────────────────────────────────────────────
 
 echo ""
@@ -104,7 +127,7 @@ echo "  ✅ generate-all complete"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 echo "  Outputs in $EDIT_DIR:"
-[ -f "$EDIT_DIR/timestamps.txt" ]     && echo "  ✅ timestamps.txt"      || echo "  ⬜ timestamps.txt"
+[ -f "$EDIT_DIR/timestamps.md" ]      && echo "  ✅ timestamps.md"      || echo "  ⬜ timestamps.md"
 [ -f "$EDIT_DIR/title_options.md" ]   && echo "  ✅ title_options.md"   || echo "  ⬜ title_options.md"
 [ -f "$EDIT_DIR/description.md" ]     && echo "  ✅ description.md"     || echo "  ⬜ description.md"
 [ -f "$EDIT_DIR/caption_${PLATFORM}.md" ] && echo "  ✅ caption_${PLATFORM}.md" || echo "  ⬜ caption_${PLATFORM}.md"

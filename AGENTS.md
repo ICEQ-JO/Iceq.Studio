@@ -32,6 +32,7 @@ A fully self-contained editing environment for AI agents. You have access to:
 4. **Always confirm strategy before executing** — describe your plan in plain English, wait for user confirmation, then execute.
 5. **Read the appropriate skill file before starting any task** — don't guess at APIs, the skills document the actual function signatures.
 6. **Never commit .env or API keys** — they are in .gitignore, keep them there.
+7. **Obsidian Frontmatter** — If the user is using the Obsidian Vault sync, all generated `.md` files will have YAML frontmatter. If you edit a file, preserve the frontmatter.
 
 ---
 
@@ -57,16 +58,17 @@ After any editing session, the output directory looks like this:
 <footage_dir>/
 ├── <raw source files — never touch these>
 └── edit/
-    ├── project.md              ← session memory, appended each run
-    ├── takes_packed.md         ← phrase-level transcript (primary reading view)
+    ├── project.md              ← session memory, appended each run (has YAML frontmatter)
+    ├── takes_packed.md         ← phrase-level transcript (primary reading view, has YAML)
     ├── edl.json                ← cut decisions
     ├── transcripts/<name>.json ← cached ElevenLabs JSON (immutable)
     ├── animations/slot_<id>/   ← per-animation renders
     ├── clips_graded/           ← per-segment extracts with grade applied
     ├── master.srt              ← output-timeline subtitles
-    ├── timestamps.txt          ← YouTube chapter timestamps (if generated)
-    ├── description.md          ← video description in user's style (if generated)
-    ├── title_options.md        ← 5 title candidates (if generated)
+    ├── timestamps.md           ← YouTube chapter timestamps (if generated, has YAML)
+    ├── description.md          ← video description (if generated, has YAML)
+    ├── caption_*.md            ← platform captions (has YAML)
+    ├── title_options.md        ← 5 title candidates (if generated, has YAML)
     ├── thumbnail.png           ← final thumbnail (if generated)
     ├── style_profile.json      ← user writing style cache (persists across projects)
     ├── verify/                 ← debug frames / timeline PNGs
@@ -80,10 +82,11 @@ After any editing session, the output directory looks like this:
 
 On the first message of each session:
 
-1. Check if `edit/project.md` exists — if yes, read it and summarize the last session in one sentence.
-2. Confirm that `ffmpeg` and `ffprobe` are on PATH: `ffmpeg -version`
-3. Confirm the ElevenLabs key resolves (from `.env` or environment).
-4. Ask the user what they want to accomplish today if it's not clear from the message.
+1. Check if `edit/project.md` exists — if yes, read it and summarize the last session in one sentence. It may be part of an Obsidian Vault.
+2. If `takes_packed.md` is present, read it carefully. Look for Obsidian highlights like `==this text==` or `**bold text**` — the user has placed these to indicate sections they definitely want kept in the cut.
+3. Confirm that `ffmpeg` and `ffprobe` are on PATH: `ffmpeg -version`
+4. Confirm the ElevenLabs key resolves (from `.env` or environment).
+5. Ask the user what they want to accomplish today if it's not clear from the message.
 
 ---
 

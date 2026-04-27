@@ -144,14 +144,19 @@ def generate_timestamps(
     lines = [f"{_seconds_to_timestamp(t)} {name}" for t, name in chapters]
 
     if style == "chapters":
-        output = "Chapters:\n" + "\n".join(lines)
+        core_output = "Chapters:\n" + "\n".join(lines)
     elif style == "minimal":
-        output = "\n".join(lines)
+        core_output = "\n".join(lines)
     else:  # youtube (default)
-        output = "\n".join(lines)
+        core_output = "\n".join(lines)
+
+    import datetime
+    today = datetime.date.today().isoformat()
+    
+    output = f"---\ntype: video_timestamps\nstatus: draft\ndate: {today}\ntags: [video/timestamps]\n---\n# YouTube Chapters\n\n{core_output}\n"
 
     # Save to file
-    out_path = edit_dir / "timestamps.txt"
+    out_path = edit_dir / "timestamps.md"
     out_path.write_text(output, encoding="utf-8")
 
     return output

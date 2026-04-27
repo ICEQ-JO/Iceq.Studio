@@ -5,6 +5,22 @@ description: >
   capability set and which sub-skill to load for each task.
 ---
 
+## CLI Architecture
+
+There are three main shell scripts that human users trigger:
+1. `./scripts/setup.sh` — installs Python/Node/FFmpeg deps and binds agents.
+2. `./scripts/new-project.sh <footage_dir>` — creates `edit/project.md`. If Obsidian is configured, it drops YAML frontmatter and dynamically links into the vault.
+3. `./scripts/generate-all.sh <edit_dir>` — triggers timestamps, captions, and thumbnails simultaneously.
+
+### Obsidian "Second Brain" Integration
+
+Users can optionally link this workspace to an Obsidian Vault to use as their knowledge base and dashboard. This is completely automatic if `OBSIDIAN_VAULT_PATH` is defined in `.env`.
+
+When this mode is active:
+1. `new-project.sh` automatically creates an Obsidian Vault folder representation (`Vault/Video Projects/My Video`) and symlinks the `project.md` and subsequent `.md` files over.
+2. All Python modules (`generate_caption()`, `generate_timestamps()`, etc.) output standard Markdown files with strict **YAML Frontmatter properties** (`type`, `status`, `tags`, etc.) so the user can query projects with Obsidian Dataview.
+3. Because the user edits the `takes_packed.md` file from inside Obsidian during their review stage, you must ALWAYS respect any `==highlight==` or `**bold**` styles they placed there, which signals what footage to KEEP.
+
 # Editing Workspace — Master Skill
 
 This workspace gives you everything needed to go from raw footage to a

@@ -357,21 +357,27 @@ def main() -> None:
     if not transcript:
         print("⚠️  No transcript found in edit dir. Add takes_packed.md or any .txt file.")
 
+    import datetime
+    today = datetime.date.today().isoformat()
+
     print("\n─── Titles ─────────────────────────────────")
     titles = generate_title_options(transcript, profile, args.n_titles)
-    title_output = "\n".join(f"{i+1}. {t}" for i, t in enumerate(titles))
-    print(title_output)
+    title_list = "\n".join(f"{i+1}. {t}" for i, t in enumerate(titles))
+    print(title_list)
+    title_output = f"---\ntype: video_titles\nstatus: draft\ndate: {today}\ntags: [video/titles]\n---\n# Title Options\n\n{title_list}\n"
     (edit_dir / "title_options.md").write_text(title_output, encoding="utf-8")
 
     print("\n─── Description ────────────────────────────")
     desc = generate_description(transcript, profile)
     print(desc[:300] + "..." if len(desc) > 300 else desc)
-    (edit_dir / "description.md").write_text(desc, encoding="utf-8")
+    desc_output = f"---\ntype: video_description\nstatus: draft\ndate: {today}\ntags: [video/description]\n---\n# Video Description\n\n{desc}\n"
+    (edit_dir / "description.md").write_text(desc_output, encoding="utf-8")
 
     print(f"\n─── Caption ({args.platform}) ──────────────────")
     cap = generate_caption(transcript, profile, platform=args.platform)  # type: ignore[arg-type]
     print(cap)
-    (edit_dir / f"caption_{args.platform}.md").write_text(cap, encoding="utf-8")
+    cap_output = f"---\ntype: social_post\nplatform: {args.platform}\nstatus: draft\ndate: {today}\ntags: [video/caption, {args.platform}]\n---\n# {args.platform.capitalize()} Post\n\n{cap}\n"
+    (edit_dir / f"caption_{args.platform}.md").write_text(cap_output, encoding="utf-8")
 
     print(f"\n✅ Outputs saved to {edit_dir}")
 
