@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        width: 1920px;
+        height: 1080px;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #000000;
+        overflow: hidden;
+        color: white;
+      }
+
+      /* ── LEFT CARD: Personal intro ── */
+      .left-card {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        width: 520px;
+        padding: 28px 36px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(40px) saturate(180%);
+        -webkit-backdrop-filter: blur(40px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        opacity: 0;
+        transform: translateX(-60px) scale(0.95);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .left-card .label {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+      }
+      .left-card .name {
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: -0.8px;
+        line-height: 1.15;
+      }
+      .left-card .role {
+        font-size: 16px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.7);
+        letter-spacing: 0.3px;
+      }
+      .accent-bar {
+        width: 0;
+        height: 3px;
+        border-radius: 3px;
+        background: linear-gradient(90deg, #007AFF, #5AC8FA);
+      }
+
+      /* ── RIGHT CARD: Pi agent info ── */
+      .right-card {
+        position: absolute;
+        top: 60px;
+        right: 60px;
+        width: 540px;
+        padding: 28px 36px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(40px) saturate(180%);
+        -webkit-backdrop-filter: blur(40px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        opacity: 0;
+        transform: translateX(60px) scale(0.95);
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+      .logo-wrap {
+        width: 80px;
+        height: 80px;
+        border-radius: 18px;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+      .logo-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .right-info {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .right-info .agent-name {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+      .right-info .agent-desc {
+        font-size: 14px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.65);
+        line-height: 1.5;
+      }
+      .right-info .agent-desc strong {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div 
+        id="stage" 
+        data-composition-id="intro-overlay" 
+        data-start="0" 
+        data-width="1920" 
+        data-height="1080" 
+        data-duration="3">
+
+      <!-- LEFT: Personal -->
+      <div class="left-card" id="left-card">
+        <span class="label">Introducing</span>
+        <div class="accent-bar" id="accent-bar"></div>
+        <h1 class="name">Khalid Khudari</h1>
+        <p class="role">AI Engineer & Cloud Infrastructure</p>
+      </div>
+
+      <!-- RIGHT: Pi agent -->
+      <div class="right-card" id="right-card">
+        <div class="logo-wrap">
+          <img src="logo.png" alt="Pi agent" />
+        </div>
+        <div class="right-info">
+          <h2 class="agent-name">Pi agent</h2>
+          <p class="agent-desc">
+            A debloated AI agentic framework<br/>
+            Created by <strong>Khalid Khudari</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+      gsap.defaults({ ease: "power4.out" });
+      const tl = gsap.timeline();
+
+      // ── Left card slides in from left ──
+      tl.to("#left-card", {
+        x: 0,
+        scale: 1,
+        opacity: 1,
+        duration: 0.9,
+        ease: "expo.out"
+      }, 0.15);
+
+      // ── Accent bar grows ──
+      tl.to("#accent-bar", {
+        width: "100%",
+        duration: 0.7,
+        ease: "power3.out"
+      }, 0.4);
+
+      // ── Right card slides in from right ──
+      tl.to("#right-card", {
+        x: 0,
+        scale: 1,
+        opacity: 1,
+        duration: 0.9,
+        ease: "expo.out"
+      }, 0.3);
+
+      // ── Hold for a beat, then exit ──
+      // Exit left
+      tl.to("#left-card", {
+        x: -40,
+        opacity: 0,
+        duration: 0.5,
+        ease: "power3.in"
+      }, 2.3);
+
+      // Exit right
+      tl.to("#right-card", {
+        x: 40,
+        opacity: 0,
+        duration: 0.5,
+        ease: "power3.in"
+      }, 2.4);
+
+      // HYPERFRAMES REGISTRATION
+      window.__timelines = window.__timelines || {};
+      window.__timelines["intro-overlay"] = tl;
+    </script>
+  </body>
+</html>

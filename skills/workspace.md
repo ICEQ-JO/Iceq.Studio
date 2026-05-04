@@ -53,11 +53,14 @@ All outputs for every session go into:
 | video-use helpers | `tools/video-use/helpers/` |
 | video-use SKILL.md | `tools/video-use/SKILL.md` |
 | HyperFrames repo | `tools/hyperframes/` |
+| **Editframe CLI** | installed via `npm install` → `node_modules/@editframe/cli` |
 | Caption module | `modules/captions/` |
 | Timestamp module | `modules/timestamps/` |
 | Thumbnail module | `modules/thumbnails/` |
 | Motion graphics bridge | `modules/motion_graphics/` |
-| HTML templates | `templates/` |
+| HTML templates (Editframe) | `templates/editframe/` |
+| HTML templates (HyperFrames) | `templates/` |
+
 
 ## End-to-End Pipeline Order
 

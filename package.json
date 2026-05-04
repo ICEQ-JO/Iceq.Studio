@@ -1,18 +1,22 @@
 {
   "name": "editing-workspace",
   "version": "0.1.0",
-  "description": "Open-source AI video editing workspace — HyperFrames motion graphics integration",
+  "description": "Open-source AI video editing workspace — HyperFrames + Editframe motion graphics",
   "private": true,
   "engines": {
-    "node": ">=22"
+    "node": ">=18"
   },
   "scripts": {
     "preview": "hyperframes preview",
     "render": "hyperframes render",
-    "add": "hyperframes add"
+    "add": "hyperframes add",
+    "ef:render": "editframe render",
+    "ef:preview": "editframe preview"
   },
   "dependencies": {
-    "hyperframes": "latest"
+    "hyperframes": "latest",
+    "@editframe/cli": "latest"
   },
   "devDependencies": {}
 }
+

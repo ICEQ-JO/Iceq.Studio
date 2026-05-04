@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "sources": {
+    "V1": "/home/khalid/editing-workspace/Iceq Studio/Video Projects/pi agent video/WhatsApp Video 2026-04-27 at 10.20.08 PM.mp4"
+  },
+  "ranges": [
+    {
+      "source": "V1",
+      "start": 1.81,
+      "end": 5.74,
+      "beat": "HOOK",
+      "quote": "Hello, my name is Khaled, and today I'm going to talk about Pi agent. Now,",
+      "reason": "Introduction"
+    },
+    {
+      "source": "V1",
+      "start": 7.93,
+      "end": 10.54,
+      "beat": "EXPLAIN",
+      "quote": "Pi agent is a new agentic AI",
+      "reason": "Definition"
+    },
+    {
+      "source": "V1",
+      "start": 12.31,
+      "end": 17.44,
+      "beat": "EXPLAIN",
+      "quote": "workflow that works by having a very deep loaded system prompt. It's only about 200",
+      "reason": "Value prop"
+    },
+    {
+      "source": "V1",
+      "start": 18.95,
+      "end": 19.62,
+      "beat": "EXPLAIN",
+      "quote": "tokens.",
+      "reason": "Technical detail"
+    },
+    {
+      "source": "V1",
+      "start": 20.15,
+      "end": 21.94,
+      "beat": "TEST",
+      "quote": "So, we're going to test it together.",
+      "reason": "Call to action"
+    },
+    {
+      "source": "V1",
+      "start": 27.23,
+      "end": 28.06,
+      "beat": "OUTRO",
+      "quote": "So let's do it.",
+      "reason": "Ending"
+    }
+  ],
+  "grade": "none",
+  "overlays": [
+    {
+      "file": "animations/slot_intro/render.mp4",
+      "start_in_output": 0.0,
+      "duration": 3.0
+    },
+    {
+      "file": "animations/slot_feature/render.mp4",
+      "start_in_output": 4.0,
+      "duration": 3.0
+    },
+    {
+      "file": "animations/slot_tech/render.mp4",
+      "start_in_output": 8.0,
+      "duration": 4.0
+    },
+    {
+      "file": "animations/slot_demo/render.mp4",
+      "start_in_output": 12.5,
+      "duration": 3.0
+    }
+  ],
+  "subtitles": "master.srt"
+}

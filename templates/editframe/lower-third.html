@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<!--
+  Template: editframe/lower-third.html
+  Engine:   Editframe (ef-* web components)
+  Purpose:  Animated lower-third name plate — slide in from left, hold, fade out.
+
+  Editframe Variables (passed via --data JSON or ef-configuration):
+    title       — Main name text  (e.g. "Khalid Al-Mansouri")
+    subtitle    — Role/title text (e.g. "Product Designer")
+    accentColor — Hex accent color  (default #FF5A00)
+    bgColor     — Background panel color (default rgba(10,10,10,0.88))
+    font        — Font family (default Inter)
+    duration    — Clip duration in seconds (set by renderer CLI flag)
+
+  EDL overlay entry:
+    { "file": "edit/animations/slot_lt1/render.mp4",
+      "start_in_output": 3.5, "duration": 4.0 }
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lower Third</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@editframe/composition@latest/dist/index.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: transparent;
+      overflow: hidden;
+    }
+
+    @keyframes slide-up-fade {
+      from { opacity: 0; transform: translateX(-48px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes bar-grow {
+      from { transform: scaleY(0); }
+      to   { transform: scaleY(1); }
+    }
+
+    @keyframes fade-out {
+      from { opacity: 1; }
+      to   { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <ef-configuration media-engine="local">
+    <!--
+      Root: 1920×1080 transparent overlay.
+      mode="fixed" so all children play simultaneously for the full duration.
+    -->
+    <ef-timegroup
+      mode="fixed"
+      class="absolute"
+      style="width:1920px; height:1080px;"
+    >
+      <!-- Lower-third panel — positioned bottom-left -->
+      <ef-timegroup
+        mode="fixed"
+        class="absolute flex items-stretch"
+        style="
+          bottom: 120px;
+          left: 80px;
+          animation: slide-up-fade 0.55s cubic-bezier(0.22,1,0.36,1) both;
+        "
+      >
+        <!-- Left accent bar -->
+        <div style="
+          width: 6px;
+          background: var(--accent-color, #FF5A00);
+          border-radius: 3px;
+          margin-right: 18px;
+          transform-origin: bottom;
+          animation: bar-grow 0.55s cubic-bezier(0.22,1,0.36,1) both;
+        "></div>
+
+        <!-- Text panel -->
+        <div style="
+          background: var(--bg-color, rgba(10,10,10,0.88));
+          padding: 16px 28px;
+          border-radius: 4px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        ">
+          <!-- Name -->
+          <ef-text
+            class="text-white font-bold"
+            style="
+              font-family: var(--font, 'Inter'), sans-serif;
+              font-size: 48px;
+              line-height: 1.1;
+              letter-spacing: -0.5px;
+            "
+          >{{title}}</ef-text>
+
+          <!-- Role -->
+          <ef-text
+            style="
+              font-family: var(--font, 'Inter'), sans-serif;
+              font-size: 24px;
+              font-weight: 400;
+              color: var(--accent-color, #FF5A00);
+              line-height: 1.2;
+              letter-spacing: 0.5px;
+              text-transform: uppercase;
+            "
+          >{{subtitle}}</ef-text>
+        </div>
+      </ef-timegroup>
+    </ef-timegroup>
+  </ef-configuration>
+
+  <script>
+    // Inject Editframe render-data variables into CSS custom properties.
+    // The bridge passes these via `npx editframe render --data '{"title":...}'`
+    // Editframe exposes render data on window.__EF_DATA__ at runtime.
+    document.addEventListener('DOMContentLoaded', () => {
+      const d = window.__EF_DATA__ || {};
+      const root = document.documentElement;
+      if (d.accentColor) root.style.setProperty('--accent-color', d.accentColor);
+      if (d.bgColor)     root.style.setProperty('--bg-color', d.bgColor);
+      if (d.font)        root.style.setProperty('--font', d.font);
+
+      // Text content
+      document.querySelectorAll('ef-text').forEach(el => {
+        const raw = el.textContent.trim();
+        if (raw === '{{title}}')    el.textContent = d.title    || 'Name';
+        if (raw === '{{subtitle}}') el.textContent = d.subtitle || '';
+      });
+    });
+  </script>
+</body>
+</html>

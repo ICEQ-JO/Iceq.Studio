@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--
+  Template: editframe/end-screen.html
+  Engine:   Editframe (ef-* web components)
+  Purpose:  Full-screen end screen — subscribe button, channel name, next video prompt.
+
+  Render data keys:
+    title       — Channel name (e.g. "My Channel")
+    subtitle    — Tagline (e.g. "New videos every week")
+    accentColor — Button + accent color (default #FF0000)
+    bgColor     — Background (default #0A0A0A)
+    font        — Font family (default Inter)
+
+  Recommended duration: 15s
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>End Screen</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@editframe/composition@latest/dist/index.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: var(--bg-color, #0A0A0A);
+      overflow: hidden;
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse-ring {
+      0%, 100% { transform: scale(1);    opacity: 0.4; }
+      50%       { transform: scale(1.08); opacity: 0.15; }
+    }
+  </style>
+</head>
+<body>
+  <ef-configuration media-engine="local">
+    <ef-timegroup
+      mode="fixed"
+      class="absolute flex flex-col items-center justify-center"
+      style="width:1920px; height:1080px; gap:40px;"
+    >
+      <!-- Pulsing ring behind subscribe button -->
+      <div style="
+        position: absolute;
+        width: 220px; height: 220px;
+        border-radius: 50%;
+        border: 3px solid var(--accent-color, #FF0000);
+        animation: pulse-ring 2.5s ease-in-out infinite;
+        animation-delay: 1s;
+      "></div>
+
+      <!-- Subscribe button (large) -->
+      <div style="
+        background: var(--accent-color, #FF0000);
+        border-radius: 50px;
+        padding: 22px 56px;
+        animation: fade-up 0.5s cubic-bezier(0.22,1,0.36,1) both;
+      ">
+        <ef-text id="ef-sub" style="
+          font-family: var(--font, 'Inter'), sans-serif;
+          font-size: 42px;
+          font-weight: 700;
+          color: #FFFFFF;
+          letter-spacing: 0.5px;
+        ">Subscribe</ef-text>
+      </div>
+
+      <!-- Bell icon -->
+      <svg width="72" height="72" viewBox="0 0 24 24" fill="none"
+           style="color: var(--accent-color, #FF0000); animation: fade-up 0.5s ease both; animation-delay: 0.2s;">
+        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+              fill="currentColor"/>
+      </svg>
+
+      <!-- Channel name -->
+      <ef-text id="ef-title" style="
+        font-family: var(--font, 'Inter'), sans-serif;
+        font-size: 56px;
+        font-weight: 700;
+        color: #FFFFFF;
+        animation: fade-up 0.5s ease both;
+        animation-delay: 0.35s;
+      ">{{title}}</ef-text>
+
+      <!-- Tagline -->
+      <ef-text id="ef-subtitle" style="
+        font-family: var(--font, 'Inter'), sans-serif;
+        font-size: 28px;
+        font-weight: 300;
+        color: rgba(255,255,255,0.6);
+        letter-spacing: 2px;
+        animation: fade-up 0.5s ease both;
+        animation-delay: 0.5s;
+      ">{{subtitle}}</ef-text>
+    </ef-timegroup>
+  </ef-configuration>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const d = window.__EF_DATA__ || {};
+      const root = document.documentElement;
+      if (d.accentColor) root.style.setProperty('--accent-color', d.accentColor);
+      if (d.bgColor)     root.style.setProperty('--bg-color', d.bgColor);
+      if (d.font)        root.style.setProperty('--font', d.font);
+
+      const t = document.getElementById('ef-title');
+      const s = document.getElementById('ef-subtitle');
+      const b = document.getElementById('ef-sub');
+      if (t) t.textContent = d.title    || 'My Channel';
+      if (s) s.textContent = d.subtitle || 'New videos every week';
+      if (b) b.textContent = d.subscribeLabel || 'Subscribe';
+    });
+  </script>
+</body>
+</html>

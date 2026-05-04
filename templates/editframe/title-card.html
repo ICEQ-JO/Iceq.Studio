@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!--
+  Template: editframe/title-card.html
+  Engine:   Editframe (ef-* web components)
+  Purpose:  Full-screen title card with staggered text reveal and accent line draw.
+
+  Render data keys (passed via --data JSON):
+    title       — Main title text
+    subtitle    — Subtitle / tagline (optional)
+    accentColor — Accent line + subtitle color (default #FF5A00)
+    bgColor     — Background (default #0A0A0A)
+    font        — Font family (default Inter)
+
+  Animation timeline (CSS-only, no GSAP dependency):
+    0.0–0.4s   Title fades + slides up
+    0.4–0.65s  Accent line draws left→right
+    0.65–0.8s  Subtitle fades in
+    hold…      Everything stable
+    last 0.5s  Fade to black (handled by ef-timegroup overlap on parent)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Title Card</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@editframe/composition@latest/dist/index.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: var(--bg-color, #0A0A0A);
+      overflow: hidden;
+    }
+
+    @keyframes title-in {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes line-draw {
+      from { width: 0; }
+      to   { width: var(--line-width, 640px); }
+    }
+
+    @keyframes sub-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <ef-configuration media-engine="local">
+    <ef-timegroup
+      mode="fixed"
+      class="absolute flex flex-col items-center justify-center"
+      style="width:1920px; height:1080px; gap:28px;"
+    >
+      <!-- Title -->
+      <ef-text
+        id="ef-title"
+        split="word"
+        class="text-white font-bold text-center"
+        style="
+          font-family: var(--font, 'Inter'), sans-serif;
+          font-size: 96px;
+          line-height: 1.05;
+          letter-spacing: -2px;
+          max-width: 1400px;
+          animation: title-in 0.4s cubic-bezier(0.22,1,0.36,1) both;
+          animation-delay: calc(var(--ef-word-index, 0) * 40ms);
+        "
+      >{{title}}</ef-text>
+
+      <!-- Accent line -->
+      <div
+        id="ef-line"
+        style="
+          height: 4px;
+          background: var(--accent-color, #FF5A00);
+          border-radius: 2px;
+          animation: line-draw 0.3s cubic-bezier(0.22,1,0.36,1) both;
+          animation-delay: 0.4s;
+        "
+      ></div>
+
+      <!-- Subtitle -->
+      <ef-text
+        id="ef-subtitle"
+        style="
+          font-family: var(--font, 'Inter'), sans-serif;
+          font-size: 36px;
+          font-weight: 300;
+          color: var(--accent-color, #FF5A00);
+          text-align: center;
+          letter-spacing: 4px;
+          text-transform: uppercase;
+          animation: sub-in 0.25s ease both;
+          animation-delay: 0.65s;
+        "
+      >{{subtitle}}</ef-text>
+    </ef-timegroup>
+  </ef-configuration>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const d = window.__EF_DATA__ || {};
+      const root = document.documentElement;
+      if (d.accentColor) root.style.setProperty('--accent-color', d.accentColor);
+      if (d.bgColor)     root.style.setProperty('--bg-color', d.bgColor);
+      if (d.font)        root.style.setProperty('--font', d.font);
+
+      // Fill text
+      const titleEl    = document.getElementById('ef-title');
+      const subtitleEl = document.getElementById('ef-subtitle');
+      if (titleEl)    titleEl.textContent    = d.title    || 'My Video';
+      if (subtitleEl) subtitleEl.textContent = d.subtitle || '';
+
+      // Set accent line width to match title width
+      requestAnimationFrame(() => {
+        const w = Math.min(titleEl ? titleEl.scrollWidth : 640, 1400);
+        root.style.setProperty('--line-width', w + 'px');
+      });
+    });
+  </script>
+</body>
+</html>
