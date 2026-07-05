@@ -115,6 +115,11 @@ def verify_render(
             with edl_path.open("r", encoding="utf-8") as f:
                 edl = json.load(f)
 
+    from ..observability import PipelineLogger
+
+    logger = PipelineLogger(output_dir)
+    logger.log("verify.start", {"video": str(video_path), "edl": str(edl_path) if edl_path else None})
+
     report = VerifyReport(video_path=video_path, edl_path=edl_path)
 
     # Always run file existence first; skip downstream checks if missing.
@@ -138,4 +143,5 @@ def verify_render(
     (output_dir / "report.md").write_text(report.to_markdown(), encoding="utf-8")
     (output_dir / "report.json").write_text(json.dumps(report.to_dict(), indent=2), encoding="utf-8")
 
+    logger.log("verify.done", {"overall": report.overall, "checks": len(report.results)})
     return report

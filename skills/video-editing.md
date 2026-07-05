@@ -35,7 +35,10 @@ This file adds workspace-specific notes on top.
 ## Quick Command Reference
 
 ```bash
-# Transcribe a single file
+# Transcribe a single file (hash-cached wrapper around video-use)
+python -m modules.transcription /path/to/video.mp4 --edit-dir /path/to/edit/
+
+# Or use video-use directly
 python tools/video-use/helpers/transcribe.py /path/to/video.mp4
 
 # Batch transcribe a directory
@@ -56,6 +59,12 @@ python tools/video-use/helpers/render.py edit/edl.json -o edit/final.mp4 --build
 # Verify render quality (duration, black frames, silence, loudness, subtitles)
 python -m modules.verify --edl edit/edl.json --video edit/final.mp4 --out edit/verify
 ```
+
+## Observability
+
+Every run that uses `modules.transcription`, `modules.motion_graphics`, or
+`modules.verify` appends structured JSON Lines to `edit/logs/pipeline.jsonl`.
+Inspect it to see timings, cache hits, and errors per run.
 
 ## EDL Format Reference
 

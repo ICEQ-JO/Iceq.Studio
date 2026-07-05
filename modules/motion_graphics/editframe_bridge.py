@@ -33,6 +33,7 @@ Environment variables:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 import subprocess
@@ -141,6 +142,44 @@ def _run_editframe(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Cache helpers (mirror HyperFrames bridge)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _render_hash(
+    template_path: Path,
+    vars: dict[str, str],
+    duration: float,
+    fps: int,
+    width: int,
+    height: int,
+) -> str:
+    """Return a stable hash string for a render job."""
+    payload = {
+        "template": str(template_path.resolve()),
+        "vars": vars,
+        "duration": duration,
+        "fps": fps,
+        "width": width,
+        "height": height,
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()[:16]
+
+
+def _hash_path(output_mp4: Path) -> Path:
+    return output_mp4.with_suffix(output_mp4.suffix + ".renderhash")
+
+
+def _is_cached(output_mp4: Path, expected_hash: str) -> bool:
+    mp4 = Path(output_mp4)
+    hash_file = _hash_path(mp4)
+    return mp4.exists() and hash_file.exists() and hash_file.read_text(encoding="utf-8").strip() == expected_hash
+
+
+def _write_cache_hash(output_mp4: Path, render_hash: str) -> None:
+    _hash_path(output_mp4).write_text(render_hash, encoding="utf-8")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Public API  (mirrors the HyperFrames bridge.py surface exactly)
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -152,6 +191,7 @@ def render_template(
     fps: int = 30,
     width: int = 1920,
     height: int = 1080,
+    dry_run: bool = False,
 ) -> str:
     """
     Render any Editframe HTML composition to an MP4 clip.
@@ -168,6 +208,8 @@ def render_template(
         duration:      Clip length in seconds.
         fps:           Frames per second (default 30).
         width, height: Output resolution (default 1920 × 1080).
+        dry_run:       If True, print the render plan and return the output path
+                       without running Editframe.
 
     Returns:
         Absolute path to the rendered MP4.
@@ -192,8 +234,29 @@ def render_template(
         )
 
     out = Path(output_mp4).resolve()
-    _run_editframe(tpl, out, data=vars, duration=duration, fps=fps,
-                   width=width, height=height)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    render_hash = _render_hash(tpl, vars, duration, fps, width, height)
+
+    if _is_cached(out, render_hash):
+        print(f"[motion_graphics] cached: {out.name}")
+        return str(out)
+
+    if dry_run:
+        print(f"[motion_graphics] dry-run: would render {tpl.name} -> {out}")
+        print(f"[motion_graphics] dry-run: hash={render_hash} vars={json.dumps(vars, sort_keys=True)}")
+        return str(out)
+
+    from ..observability import PipelineLogger
+
+    edit_dir = out.parent
+    while edit_dir.name != "edit" and edit_dir.parent != edit_dir:
+        edit_dir = edit_dir.parent
+    logger = PipelineLogger(edit_dir if edit_dir.name == "edit" else out.parent)
+
+    with logger.timed("motion_graphics.render", {"template": tpl.name, "output": out.name, "hash": render_hash}):
+        _run_editframe(tpl, out, data=vars, duration=duration, fps=fps,
+                       width=width, height=height)
+    _write_cache_hash(out, render_hash)
     return str(out)
 
 

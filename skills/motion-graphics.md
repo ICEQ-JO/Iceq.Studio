@@ -213,6 +213,25 @@ After rendering, add the path to your `edl.json`:
 `start_in_output` is the output-timeline second at which the overlay appears.
 Overlays are applied BEFORE subtitles.
 
+## Render Cache & Dry-Run
+
+`render_template()` caches rendered clips by a hash of template + variables +
+duration + resolution. Re-rendering the same slot with the same inputs returns
+instantly and writes a `<slot>/render.mp4.renderhash` file.
+
+To preview the render plan without invoking the renderer:
+```python
+from modules.motion_graphics import bridge
+
+bridge.render_template(
+    template_path="templates/editframe/lower-third.html",
+    vars={"title": "Hello", "subtitle": "World"},
+    output_mp4="edit/animations/slot_1/render.mp4",
+    duration=4.0,
+    dry_run=True,
+)
+```
+
 ---
 
 ## Writing Custom Editframe Compositions (LLM-friendly guide)

@@ -49,6 +49,21 @@ jobs:
           python3 -c "from modules.motion_graphics import bridge; print('motion_graphics OK')"
           python3 -c "from modules.motion_graphics import add_lower_third_vertical; print('motion_graphics vertical OK')"
           python3 -c "from modules.verify import verify_render; print('verify OK')"
+          python3 -c "from modules.transcription import transcribe_video; print('transcription OK')"
+          python3 -c "from modules.observability import PipelineLogger; print('observability OK')"
+
+      - name: Test observability logger
+        run: |
+          python3 - <<'PY'
+          import json
+          from modules.observability import PipelineLogger
+          logger = PipelineLogger("/tmp/obs_test")
+          logger.log("test", {"x": 1})
+          entries = logger.read()
+          assert len(entries) >= 1
+          assert entries[-1]["event"] == "test"
+          print("observability OK")
+          PY
 
       - name: Test motion graphics preview
         run: |

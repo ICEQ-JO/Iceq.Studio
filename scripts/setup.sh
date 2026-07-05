@@ -217,6 +217,14 @@ python3 -c "from modules.captions.hooks import extract_hooks; print('hooks OK')"
   && ok "modules.captions.hooks imports correctly" \
   || { fail "modules.captions.hooks import failed"; ERRORS=$((ERRORS + 1)); }
 
+python3 -c "from modules.transcription import transcribe_video; print('transcription OK')" 2>/dev/null \
+  && ok "modules.transcription imports correctly" \
+  || { fail "modules.transcription import failed"; ERRORS=$((ERRORS + 1)); }
+
+python3 -c "from modules.observability import PipelineLogger; print('observability OK')" 2>/dev/null \
+  && ok "modules.observability imports correctly" \
+  || { fail "modules.observability import failed"; ERRORS=$((ERRORS + 1)); }
+
 python3 -c "from modules.motion_graphics import bridge; print('motion_graphics OK')" 2>/dev/null \
   && ok "modules.motion_graphics imports correctly" \
   || { fail "modules.motion_graphics import failed"; ERRORS=$((ERRORS + 1)); }
