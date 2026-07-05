@@ -150,8 +150,6 @@ class GeminiBackend(ImageBackend):
             try:
                 img_bytes = image._pil_image.tobytes()  # type: ignore[attr-defined]
                 # Use PIL to save as proper PNG
-                from PIL import Image as PILImage
-                import io
                 pil_img = image._pil_image  # type: ignore[attr-defined]
                 pil_img.save(str(out), "PNG")
             except AttributeError:

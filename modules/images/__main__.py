@@ -89,7 +89,7 @@ def cmd_thumbnail_bg(args: argparse.Namespace) -> None:
     output_dir = edit_dir / "assets"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"\n🖼   Generating thumbnail background…")
+    print("\n🖼   Generating thumbnail background…")
     print(f"    Prompt: {args.prompt[:80]}")
     print(f"    Backend: {args.backend}  Style: {args.style or 'thumbnail'}")
     print()
@@ -117,11 +117,11 @@ def cmd_thumbnail_bg(args: argparse.Namespace) -> None:
             )
             print(f"✅  Thumbnail composed → {result}")
         else:
-            print(f"✅  Background images saved:")
+            print("✅  Background images saved:")
             for p in paths:
                 print(f"    {p}")
             if paths:
-                print(f"\n💡  Tip: use --title 'My Title' to auto-composite text on the image.")
+                print("\n💡  Tip: use --title 'My Title' to auto-composite text on the image.")
         print()
 
     except RuntimeError as e:

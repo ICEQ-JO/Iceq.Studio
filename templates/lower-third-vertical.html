@@ -1,27 +1,16 @@
 <!DOCTYPE html>
 <!--
-  Template: lower-third.html
-  Purpose: Animated lower-third name plate with slide-in bar and text
+  Template: lower-third-vertical.html
+  Purpose: 9:16 vertical lower-third for Shorts/Reels.
 
-  HyperFrames Data Variables (set by bridge.py or manually):
-    data-title        — Main name line (large text)
-    data-subtitle     — Role/title line (small text below)
-    data-accent-color — Bar and underline accent color
-    data-bg-color     — Bar background color
-    data-font         — Font family
-    data-duration     — Clip duration in seconds
-
+  HyperFrames Data Variables: same as lower-third.html.
   Design tokens are loaded from templates/design-system.json by the bridge.
-
-  Usage in EDL overlays:
-    { "file": "edit/animations/slot_lt1/render.mp4",
-      "start_in_output": 3.5, "duration": 4.0 }
 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lower Third</title>
+  <title>Lower Third — Vertical</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
@@ -30,12 +19,12 @@
       --bg-color: rgba(10,10,10,0.85);
       --text-color: #FFFFFF;
       --font: Inter;
-      --title-size: 48px;
-      --subtitle-size: 24px;
+      --title-size: 56px;
+      --subtitle-size: 30px;
       --line-height-tight: 1.1;
       --line-height-normal: 1.2;
-      --margin: 80px;
-      --safe-area: 120px;
+      --margin: 60px;
+      --safe-area: 180px;
       --border-radius: 4px;
       --accent-bar-width: 6px;
       --animation-easing: cubic-bezier(0.22,1,0.36,1);
@@ -46,8 +35,8 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      width: 1920px;
-      height: 1080px;
+      width: 1080px;
+      height: 1920px;
       background: transparent;
       overflow: hidden;
       font-family: var(--font), sans-serif;
@@ -57,9 +46,9 @@
       position: absolute;
       bottom: var(--safe-area);
       left: var(--margin);
+      right: var(--margin);
       display: flex;
       align-items: stretch;
-      gap: 0;
       opacity: 0;
       transform: translateX(-60px);
     }
@@ -76,10 +65,11 @@
     .text-block {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
       background: var(--bg-color);
-      padding: 16px 28px;
+      padding: 18px 28px;
       border-radius: var(--border-radius);
+      flex: 1;
     }
 
     .name {
@@ -103,10 +93,10 @@
 <body>
   <div
     id="stage"
-    data-composition-id="lower-third"
+    data-composition-id="lower-third-vertical"
     data-start="0"
-    data-width="1920"
-    data-height="1080"
+    data-width="1080"
+    data-height="1920"
     data-duration="4"
   >
     <div class="lower-third" id="lt">
@@ -126,8 +116,6 @@
     const bar = document.getElementById('bar');
     const root = document.documentElement;
 
-    // Map all data-* attributes to CSS custom properties.
-    // CamelCase dataset keys become kebab-case CSS variables.
     Object.entries(stage.dataset).forEach(([key, value]) => {
       if (value === undefined || value === '') return;
       const cssVar = '--' + key.replace(/[A-Z]/g, m => '-' + m.toLowerCase());

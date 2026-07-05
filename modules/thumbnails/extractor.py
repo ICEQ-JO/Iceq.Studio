@@ -84,7 +84,6 @@ def _sharpness_score(frame_path: str) -> float:
         from PIL import Image, ImageFilter
 
         img = Image.open(frame_path).convert("L")  # grayscale
-        arr = np.array(img, dtype=np.float32)
         laplacian = np.array(img.filter(ImageFilter.FIND_EDGES), dtype=np.float32)
         return float(np.var(laplacian))
     except Exception:

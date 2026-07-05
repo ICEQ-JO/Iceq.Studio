@@ -37,8 +37,8 @@ Style presets:
     cinematic | flat_dark | thumbnail | realistic | motion_bg | illustration | neon | clean_studio
 """
 
-from .generator import generate_image, list_backends, get_backend, STYLE_PRESETS
 from .base import ImageBackend
+from .generator import STYLE_PRESETS, generate_image, get_backend, list_backends
 
 __all__ = [
     "generate_image",

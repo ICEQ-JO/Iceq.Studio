@@ -1,43 +1,31 @@
 <!DOCTYPE html>
 <!--
-  Template: editframe/lower-third.html
+  Template: editframe/lower-third-vertical.html
   Engine:   Editframe (ef-* web components)
-  Purpose:  Animated lower-third name plate — slide in from left, hold, fade out.
+  Purpose:  9:16 vertical lower-third for Shorts/Reels.
 
-  Variables (passed via --data JSON):
-    title       — Main name text  (e.g. "Khalid Al-Mansouri")
-    subtitle    — Role/title text (e.g. "Product Designer")
-    accentColor — Hex accent color
-    bgColor     — Background panel color
-    font        — Font family
-    duration    — Clip duration in seconds (set by renderer)
-
+  Variables: same as lower-third.html.
   Design tokens are loaded from templates/design-system.json by the bridge.
-
-  EDL overlay entry:
-    { "file": "edit/animations/slot_lt1/render.mp4",
-      "start_in_output": 3.5, "duration": 4.0 }
 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Lower Third</title>
+  <title>Lower Third — Vertical</title>
   <script type="module" src="https://cdn.jsdelivr.net/npm/@editframe/composition@latest/dist/index.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
     :root {
-      /* Defaults from design-system.json; overridden by JS below */
       --accent-color: #FF5A00;
       --bg-color: rgba(10,10,10,0.88);
       --text-color: #FFFFFF;
       --font: Inter;
-      --title-size: 48px;
-      --subtitle-size: 24px;
+      --title-size: 56px;
+      --subtitle-size: 30px;
       --line-height-tight: 1.1;
       --line-height-normal: 1.2;
-      --margin: 80px;
-      --safe-area: 120px;
+      --margin: 60px;
+      --safe-area: 180px;
       --border-radius: 4px;
       --accent-bar-width: 6px;
       --animation-easing: cubic-bezier(0.22,1,0.36,1);
@@ -48,25 +36,10 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      width: 1920px;
-      height: 1080px;
+      width: 1080px;
+      height: 1920px;
       background: transparent;
       overflow: hidden;
-    }
-
-    @keyframes slide-up-fade {
-      from { opacity: 0; transform: translateX(-48px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    @keyframes bar-grow {
-      from { transform: scaleY(0); }
-      to   { transform: scaleY(1); }
-    }
-
-    @keyframes fade-out {
-      from { opacity: 1; }
-      to   { opacity: 0; }
     }
   </style>
 </head>
@@ -75,19 +48,18 @@
     <ef-timegroup
       mode="fixed"
       class="absolute"
-      style="width:1920px; height:1080px;"
+      style="width:1080px; height:1920px;"
     >
-      <!-- Lower-third panel — positioned bottom-left using safe-area/margin tokens -->
       <ef-timegroup
         mode="fixed"
         class="absolute flex items-stretch"
         style="
           bottom: var(--safe-area);
           left: var(--margin);
+          right: var(--margin);
           animation: slide-up-fade var(--animation-duration-in) var(--animation-easing) both;
         "
       >
-        <!-- Left accent bar -->
         <div style="
           width: var(--accent-bar-width);
           background: var(--accent-color);
@@ -97,16 +69,15 @@
           animation: bar-grow var(--animation-duration-in) var(--animation-easing) both;
         "></div>
 
-        <!-- Text panel -->
         <div style="
           background: var(--bg-color);
-          padding: 16px 28px;
+          padding: 18px 28px;
           border-radius: var(--border-radius);
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 8px;
+          flex: 1;
         ">
-          <!-- Name -->
           <ef-text
             class="font-bold"
             style="
@@ -118,7 +89,6 @@
             "
           >{{title}}</ef-text>
 
-          <!-- Role -->
           <ef-text
             style="
               font-family: var(--font), sans-serif;
@@ -136,9 +106,6 @@
   </ef-configuration>
 
   <script>
-    // Map all render-data keys to CSS custom properties.
-    // Design tokens arrive camelCase (e.g. accentColor) from the bridge; we also
-    // support kebab-case keys for manual composition.
     document.addEventListener('DOMContentLoaded', () => {
       const d = window.__EF_DATA__ || {};
       const root = document.documentElement;
@@ -151,7 +118,6 @@
         root.style.setProperty(cssVar, value);
       });
 
-      // Text content
       document.querySelectorAll('ef-text').forEach(el => {
         const raw = el.textContent.trim();
         if (raw === '{{title}}')    el.textContent = d.title    || 'Name';

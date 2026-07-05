@@ -46,6 +46,10 @@ This produces:
 - `edit/description.md` — full YouTube description
 - `edit/caption_youtube.md` — short hook caption
 
+If `edit/edl.json` exists, the generator also extracts high-impact hook
+candidates from each beat and feeds them to the LLM. This makes titles and
+descriptions structurally aligned with the actual edit.
+
 For other platforms:
 ```bash
 python -m modules.captions generate --edit-dir <path> --platform instagram
@@ -53,6 +57,20 @@ python -m modules.captions generate --edit-dir <path> --platform linkedin
 python -m modules.captions generate --edit-dir <path> --platform twitter
 python -m modules.captions generate --edit-dir <path> --platform tiktok
 ```
+
+## Hook Scoring
+
+`modules/captions/hooks.py` scores transcript lines for title/thumbnail potential:
+
+```python
+from modules.captions.hooks import extract_hooks, top_hook_per_beat
+
+hooks = extract_hooks(transcript_text, "/path/to/edit/edl.json", top_n=5)
+per_beat = top_hook_per_beat(transcript_text, "/path/to/edit/edl.json")
+```
+
+Scoring favors sentences that are 6-12 words, contain numbers, ask questions,
+or use strong verbs, and appear early in a chapter.
 
 ## Python API
 

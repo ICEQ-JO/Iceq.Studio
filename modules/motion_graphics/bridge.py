@@ -22,12 +22,11 @@ Requirements:
 
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
-import tempfile
 from pathlib import Path
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Internal helpers
@@ -40,6 +39,18 @@ def _workspace_root() -> Path:
 
 def _templates_dir() -> Path:
     return _workspace_root() / "templates"
+
+
+def _load_design_tokens() -> dict[str, str]:
+    """Load shared design tokens from templates/design-system.json."""
+    path = _templates_dir() / "design-system.json"
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return {k: str(v) for k, v in data.items() if not k.startswith("_")}
+    except (json.JSONDecodeError, OSError):
+        return {}
 
 
 def _check_requirements() -> None:
@@ -55,9 +66,12 @@ def _check_requirements() -> None:
 def _inject_vars(html: str, vars: dict[str, str], duration: float | None = None) -> str:
     """
     Inject vars as data-* attributes on the first #stage element.
+    Design tokens are loaded from templates/design-system.json and merged first;
+    user-provided vars override them.
     Also sets data-duration if provided and not already present.
     """
-    all_vars = dict(vars)
+    all_vars: dict[str, str] = _load_design_tokens()
+    all_vars.update({k: str(v) for k, v in vars.items()})
     if duration is not None and "duration" not in all_vars:
         all_vars["duration"] = str(duration)
 
@@ -199,6 +213,38 @@ def add_lower_third(
         },
         output_mp4=_slot_path(output_dir, slot_id),
         duration=duration,
+    )
+
+
+def add_lower_third_vertical(
+    name: str,
+    title: str,
+    output_dir: str | Path,
+    slot_id: str = "ltv1",
+    duration: float = 4.0,
+    accent_color: str = "#FF5A00",
+    bg_color: str = "#0A0A0A",
+    font: str = "Inter",
+) -> str:
+    """
+    Render a 9:16 vertical lower-third overlay for Shorts/Reels.
+
+    Args: same as add_lower_third.
+    Returns: Absolute path to render.mp4.
+    """
+    return render_template(
+        template_path=_templates_dir() / "lower-third-vertical.html",
+        vars={
+            "title": name,
+            "subtitle": title,
+            "accent-color": accent_color,
+            "bg-color": bg_color,
+            "font": font,
+        },
+        output_mp4=_slot_path(output_dir, slot_id),
+        duration=duration,
+        width=1080,
+        height=1920,
     )
 
 

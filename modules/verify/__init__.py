@@ -17,6 +17,6 @@ CLI:
 
 from __future__ import annotations
 
-from .report import verify_render, VerifyReport
+from .report import VerifyReport, verify_render
 
 __all__ = ["verify_render", "VerifyReport"]

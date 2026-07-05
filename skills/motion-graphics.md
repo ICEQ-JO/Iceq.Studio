@@ -30,9 +30,42 @@ MOTION_GRAPHICS_BACKEND=hyperframes  # GSAP-heavy custom animations
 ## Workflow
 
 1. **Choose a template** from `templates/editframe/` (or `templates/` for HyperFrames)
-2. **Render it** using the Python bridge — one liner per animation slot
-3. **Add to EDL** under `overlays` with `start_in_output` and `duration`
-4. **Re-render** with `render.py` — clips are composited with correct PTS shift
+2. **Preview it** in a browser before rendering to MP4
+3. **Render it** using the Python bridge — one liner per animation slot
+4. **Add to EDL** under `overlays` with `start_in_output` and `duration`
+5. **Re-render** with `render.py` — clips are composited with correct PTS shift
+
+---
+
+## Design System
+
+Shared visual tokens live in `templates/design-system.json`. The bridge injects
+them into every template automatically, and per-call variables override them.
+
+Editframe receives camelCase keys (`accentColor`, `bgColor`); HyperFrames
+receives kebab-case keys (`accent-color`, `bg-color`).
+
+To change the brand globally, edit `templates/design-system.json` instead of
+individual templates.
+
+---
+
+## Preview a Template
+
+```bash
+# Editframe lower-third
+python -m modules.motion_graphics preview \
+  --template templates/editframe/lower-third.html \
+  --output /tmp/preview.html
+
+# HyperFrames lower-third with custom text
+python -m modules.motion_graphics preview \
+  --template templates/lower-third.html \
+  --var title="Hello" --var subtitle="World" \
+  --output /tmp/preview_hf.html
+```
+
+Open the generated HTML in a browser. No API keys or rendering required.
 
 ---
 
@@ -60,6 +93,20 @@ path = bridge.add_lower_third(
 | `accent_color` | hex | #FF5A00 |
 | `bg_color` | string | rgba(10,10,10,0.88) |
 | `duration` | float | 4.0 s |
+
+---
+
+### `lower-third-vertical.html`
+9:16 vertical variant for Shorts/Reels. Uses the same API as `lower-third.html`.
+```python
+path = bridge.add_lower_third_vertical(
+    name="Khalid Al-Mansouri",
+    title="Product Designer",
+    output_dir=edit_dir,
+    slot_id="ltv1",
+    duration=4.0,
+)
+```
 
 ---
 

@@ -29,7 +29,7 @@ import os
 import re
 import textwrap
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from dotenv import load_dotenv
 
@@ -176,16 +176,47 @@ def _style_directive(profile: StyleProfile) -> str:
     return " ".join(parts)
 
 
+def _build_context(transcript: str, edl: dict[str, Any] | None, hooks: list[str] | None) -> str:
+    """Assemble a prompt context that includes transcript, chapter beats, and top hooks."""
+    parts = ["Video transcript:\n\n" + transcript[:4000]]
+
+    if edl:
+        beats: list[str] = []
+        cumulative = 0.0
+        for seg in edl.get("ranges", []):
+            beat = seg.get("beat", "SECTION").upper() or "SECTION"
+            dur = float(seg["end"]) - float(seg["start"])
+            beats.append(f"- {beat}: {cumulative:.1f}s (+{dur:.1f}s)")
+            cumulative += dur
+        if beats:
+            parts.append("\nChapter structure:\n" + "\n".join(beats))
+
+    if hooks:
+        parts.append("\nTop hook candidates (use for inspiration):\n- " + "\n- ".join(hooks[:5]))
+
+    return "\n".join(parts)
+
+
 def generate_title_options(
     transcript: str,
     style: StyleProfile | None = None,
     n: int = 5,
+    edl: dict[str, Any] | None = None,
+    hooks: list[str] | None = None,
 ) -> list[str]:
     """
     Generate n YouTube-style title options for a video.
 
-    Returns a list of plain-string titles (no numbering).
-    Falls back to extracting the first sentence of the transcript if no LLM.
+    Args:
+        transcript: Full or packed transcript text.
+        style: Style profile to match.
+        n: Number of title options.
+        edl: Optional EDL dict to inform chapter structure.
+        hooks: Optional list of top hook strings for inspiration.
+
+    Returns:
+        List of plain-string titles (no numbering).
+        Falls back to extracting the first sentence of the transcript if no LLM.
     """
     profile = style or default_profile()
     style_dir = _style_directive(profile)
@@ -200,7 +231,7 @@ def generate_title_options(
         Return ONLY a JSON array of {n} strings. No prose, no markdown.
     """).strip()
 
-    raw = _llm_call(system, f"Video transcript:\n\n{transcript[:4000]}")
+    raw = _llm_call(system, _build_context(transcript, edl, hooks))
 
     if raw:
         try:
@@ -213,7 +244,9 @@ def generate_title_options(
             if titles:
                 return titles[:n]
 
-    # Rule-based fallback — extract first sentence + variants
+    # Rule-based fallback — use hooks if available, else first sentence + variants
+    if hooks:
+        return hooks[:n]
     first_sentence = re.split(r"[.!?]", transcript)[0].strip()[:70]
     return [first_sentence] + [f"How I {first_sentence.lower()[:60]}"] * min(n - 1, 4)
 
@@ -222,6 +255,8 @@ def generate_description(
     transcript: str,
     style: StyleProfile | None = None,
     include_timestamps: str | None = None,
+    edl: dict[str, Any] | None = None,
+    hooks: list[str] | None = None,
 ) -> str:
     """
     Generate a YouTube video description in the user's writing style.
@@ -230,6 +265,8 @@ def generate_description(
         transcript: Full or packed transcript text.
         style: Style profile to match.
         include_timestamps: Pre-generated timestamps string to append.
+        edl: Optional EDL dict to inform chapter structure.
+        hooks: Optional list of top hook strings for the opening hook.
 
     Returns:
         Description as a plain string (not markdown).
@@ -241,7 +278,9 @@ def generate_description(
         You write YouTube video descriptions. {style_dir}
         Structure:
         1. Hook paragraph (2-3 sentences): what the video is about and why it matters.
+           If hook candidates are provided, build the hook around the strongest one.
         2. What viewers will learn (3-5 bullet points starting with "—").
+           Use the chapter structure to name the bullets.
         3. CTA paragraph.
         4. Leave a blank line, then add: "TIMESTAMPS_PLACEHOLDER" if timestamps should go here.
         5. Two blank lines, then relevant hashtags (5-10).
@@ -249,12 +288,13 @@ def generate_description(
         Write in plain text, no markdown formatting. Match the creator's voice exactly.
     """).strip()
 
-    raw = _llm_call(system, f"Video transcript:\n\n{transcript[:6000]}")
+    raw = _llm_call(system, _build_context(transcript, edl, hooks))
 
     if not raw:
         # Rule-based fallback
+        hook = (hooks[0] if hooks else transcript[:200].strip()) + "..."
         raw = (
-            f"{transcript[:200].strip()}...\n\n"
+            f"{hook}\n\n"
             "— Key insight 1\n— Key insight 2\n— Key insight 3\n\n"
             f"{profile.cta_style or 'Let me know your thoughts in the comments!'}\n\n"
             "#video #content"
@@ -272,9 +312,18 @@ def generate_caption(
     transcript: str,
     style: StyleProfile | None = None,
     platform: Platform = "youtube",
+    edl: dict[str, Any] | None = None,
+    hooks: list[str] | None = None,
 ) -> str:
     """
     Generate a platform-specific caption/post in the user's writing style.
+
+    Args:
+        transcript: Full or packed transcript text.
+        style: Style profile to match.
+        platform: Target social platform.
+        edl: Optional EDL dict to inform chapter structure.
+        hooks: Optional list of top hook strings for the opening.
 
     Platform limits:
         youtube    — short hook for community post or pinned comment
@@ -287,9 +336,18 @@ def generate_caption(
     style_dir = _style_directive(profile)
 
     platform_rules = {
-        "youtube": "Write a YouTube community post (3-4 sentences, engaging question at the end, no hashtags).",
-        "instagram": "Write an Instagram caption. Hook in the first line. 150-300 words. 15-25 relevant hashtags at the end, separated by line break.",
-        "linkedin": "Write a LinkedIn post. Professional but personal tone. Story structure. 200-400 words. 3-5 hashtags max.",
+        "youtube": (
+            "Write a YouTube community post (3-4 sentences, engaging question at the end, "
+            "no hashtags)."
+        ),
+        "instagram": (
+            "Write an Instagram caption. Hook in the first line. 150-300 words. "
+            "15-25 relevant hashtags at the end, separated by line break."
+        ),
+        "linkedin": (
+            "Write a LinkedIn post. Professional but personal tone. Story structure. "
+            "200-400 words. 3-5 hashtags max."
+        ),
         "twitter": "Write a tweet. Max 280 characters. Punchy. No hashtags unless they fit naturally.",
         "tiktok": "Write a TikTok caption. Max 150 characters. Energy, hooks, lots of emoji.",
     }
@@ -300,11 +358,11 @@ def generate_caption(
         Return ONLY the caption text, no extra explanation.
     """).strip()
 
-    raw = _llm_call(system, f"Video content (transcript excerpt):\n\n{transcript[:3000]}")
+    raw = _llm_call(system, _build_context(transcript, edl, hooks))
 
     if not raw:
         # Rule-based fallback
-        hook = transcript[:100].strip()
+        hook = (hooks[0] if hooks else transcript[:100].strip())
         hashtags = " ".join((profile.hashtags or {}).get(platform, []) or ["#video"])
         raw = f"{hook}... {profile.cta_style or ''} {hashtags}".strip()
 
@@ -334,7 +392,11 @@ def main() -> None:
 
     gen = sub.add_parser("generate", help="Generate titles, description, and platform captions")
     gen.add_argument("--edit-dir", required=True, help="Path to <footage>/edit/")
-    gen.add_argument("--platform", default="youtube", choices=["youtube", "instagram", "linkedin", "twitter", "tiktok"])
+    gen.add_argument(
+        "--platform",
+        default="youtube",
+        choices=["youtube", "instagram", "linkedin", "twitter", "tiktok"],
+    )
     gen.add_argument("--n-titles", type=int, default=5)
 
     style_cmd = sub.add_parser("analyze-style", help="Analyze sample texts and save style profile")
@@ -357,26 +419,51 @@ def main() -> None:
     if not transcript:
         print("⚠️  No transcript found in edit dir. Add takes_packed.md or any .txt file.")
 
+    # Load EDL and extract high-impact hooks
+    edl_path = edit_dir / "edl.json"
+    edl: dict[str, Any] | None = None
+    if edl_path.exists():
+        with edl_path.open("r", encoding="utf-8") as f:
+            edl = json.load(f)
+
+    from .hooks import extract_hooks
+
+    hook_candidates = extract_hooks(transcript, edl_path if edl else None, top_n=5)
+    hooks = [h.text for h in hook_candidates]
+
     import datetime
     today = datetime.date.today().isoformat()
 
+    print("\n─── Top Hooks ──────────────────────────────")
+    for i, h in enumerate(hook_candidates, 1):
+        print(f"{i}. [{h.beat}] {h.text}")
+
     print("\n─── Titles ─────────────────────────────────")
-    titles = generate_title_options(transcript, profile, args.n_titles)
+    titles = generate_title_options(transcript, profile, args.n_titles, edl=edl, hooks=hooks)
     title_list = "\n".join(f"{i+1}. {t}" for i, t in enumerate(titles))
     print(title_list)
-    title_output = f"---\ntype: video_titles\nstatus: draft\ndate: {today}\ntags: [video/titles]\n---\n# Title Options\n\n{title_list}\n"
+    title_output = (
+        f"---\ntype: video_titles\nstatus: draft\ndate: {today}\n"
+        f"tags: [video/titles]\n---\n# Title Options\n\n{title_list}\n"
+    )
     (edit_dir / "title_options.md").write_text(title_output, encoding="utf-8")
 
     print("\n─── Description ────────────────────────────")
-    desc = generate_description(transcript, profile)
+    desc = generate_description(transcript, profile, edl=edl, hooks=hooks)
     print(desc[:300] + "..." if len(desc) > 300 else desc)
-    desc_output = f"---\ntype: video_description\nstatus: draft\ndate: {today}\ntags: [video/description]\n---\n# Video Description\n\n{desc}\n"
+    desc_output = (
+        f"---\ntype: video_description\nstatus: draft\ndate: {today}\n"
+        f"tags: [video/description]\n---\n# Video Description\n\n{desc}\n"
+    )
     (edit_dir / "description.md").write_text(desc_output, encoding="utf-8")
 
     print(f"\n─── Caption ({args.platform}) ──────────────────")
-    cap = generate_caption(transcript, profile, platform=args.platform)  # type: ignore[arg-type]
+    cap = generate_caption(transcript, profile, platform=args.platform, edl=edl, hooks=hooks)  # type: ignore[arg-type]
     print(cap)
-    cap_output = f"---\ntype: social_post\nplatform: {args.platform}\nstatus: draft\ndate: {today}\ntags: [video/caption, {args.platform}]\n---\n# {args.platform.capitalize()} Post\n\n{cap}\n"
+    cap_output = (
+        f"---\ntype: social_post\nplatform: {args.platform}\nstatus: draft\ndate: {today}\n"
+        f"tags: [video/caption, {args.platform}]\n---\n# {args.platform.capitalize()} Post\n\n{cap}\n"
+    )
     (edit_dir / f"caption_{args.platform}.md").write_text(cap_output, encoding="utf-8")
 
     print(f"\n✅ Outputs saved to {edit_dir}")

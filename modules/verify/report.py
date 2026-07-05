@@ -13,13 +13,13 @@ from pathlib import Path
 from typing import Any
 
 from .checks import (
+    CheckResult,
     check_black_frames,
     check_duration,
     check_file_exists,
     check_loudness,
     check_silence,
     check_subtitles,
-    CheckResult,
 )
 
 
@@ -42,7 +42,7 @@ class VerifyReport:
     def to_markdown(self) -> str:
         lines = [
             "---",
-            f"type: verify_report",
+            "type: verify_report",
             f"status: {self.overall}",
             f"date: {self.created_at}",
             f"video: {self.video_path}",

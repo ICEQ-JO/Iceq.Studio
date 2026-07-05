@@ -38,9 +38,9 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .base import ImageBackend
-from .backends.openai_backend import OpenAIBackend
 from .backends.gemini_backend import GeminiBackend
+from .backends.openai_backend import OpenAIBackend
+from .base import ImageBackend
 
 load_dotenv(dotenv_path=Path(__file__).resolve().parents[2] / ".env")
 

@@ -37,6 +37,27 @@ python -m modules.thumbnails generate \
 
 Requires Node >= 22 and `npm install` in workspace root.
 
+## A/B Variants
+
+Generate multiple thumbnails from the same frame to test different hooks:
+
+```bash
+python -m modules.thumbnails generate \
+    --video edit/final.mp4 \
+    --edit-dir edit/ \
+    --variants "The 3 Rules" "Why It Fails" "The Fix Nobody Uses" \
+    --subtitle "Full Breakdown"
+```
+
+This creates:
+- `edit/thumbnail_variant_1.png`
+- `edit/thumbnail_variant_2.png`
+- `edit/thumbnail_variant_3.png`
+- `edit/thumbnail.png` (copy of variant 1)
+
+Use `modules.captions.hooks.extract_hooks()` to get title candidates from the
+EDL, then pass them to `--variants`.
+
 ## Python API
 
 ```python

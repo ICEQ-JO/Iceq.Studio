@@ -8,7 +8,6 @@ All checks are read-only: they inspect files but never modify them.
 from __future__ import annotations
 
 import json
-import math
 import re
 import subprocess
 from dataclasses import dataclass

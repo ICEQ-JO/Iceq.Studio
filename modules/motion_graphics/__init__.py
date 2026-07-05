@@ -38,37 +38,65 @@ from __future__ import annotations
 
 import os
 
-# ── re-export the raw bridges so callers can import them explicitly ────────
-from .editframe_bridge import (  # noqa: F401
-    render_template         as ef_render_template,
-    add_lower_third         as ef_add_lower_third,
-    add_chapter_intro       as ef_add_chapter_intro,
-    add_title_card          as ef_add_title_card,
-    add_subscribe_bump      as ef_add_subscribe_bump,
-    add_end_screen          as ef_add_end_screen,
-    render_template_with_ai_bg as ef_render_template_with_ai_bg,
+from .bridge import (
+    add_chapter_intro as hf_add_chapter_intro,
 )
-
+from .bridge import (
+    add_lower_third as hf_add_lower_third,
+)
+from .bridge import (
+    add_lower_third_vertical as hf_add_lower_third_vertical,
+)
+from .bridge import (
+    add_subscribe_bump as hf_add_subscribe_bump,
+)
+from .bridge import (
+    add_title_card as hf_add_title_card,
+)
 from .bridge import (  # noqa: F401  (HyperFrames)
-    render_template         as hf_render_template,
-    add_lower_third         as hf_add_lower_third,
-    add_chapter_intro       as hf_add_chapter_intro,
-    add_title_card          as hf_add_title_card,
-    add_subscribe_bump      as hf_add_subscribe_bump,
+    render_template as hf_render_template,
+)
+from .bridge import (
     render_template_with_ai_bg as hf_render_template_with_ai_bg,
 )
+from .editframe_bridge import (
+    add_chapter_intro as ef_add_chapter_intro,
+)
+from .editframe_bridge import (
+    add_end_screen as ef_add_end_screen,
+)
+from .editframe_bridge import (
+    add_lower_third as ef_add_lower_third,
+)
+from .editframe_bridge import (
+    add_lower_third_vertical as ef_add_lower_third_vertical,
+)
+from .editframe_bridge import (
+    add_subscribe_bump as ef_add_subscribe_bump,
+)
+from .editframe_bridge import (
+    add_title_card as ef_add_title_card,
+)
 
+# ── re-export the raw bridges so callers can import them explicitly ────────
+from .editframe_bridge import (  # noqa: F401
+    render_template as ef_render_template,
+)
+from .editframe_bridge import (
+    render_template_with_ai_bg as ef_render_template_with_ai_bg,
+)
 
 # ── auto-routing via MOTION_GRAPHICS_BACKEND env variable ─────────────────
 _BACKEND = os.getenv("MOTION_GRAPHICS_BACKEND", "editframe").lower().strip()
 
 if _BACKEND == "hyperframes":
     from .bridge import (
-        render_template,
-        add_lower_third,
         add_chapter_intro,
-        add_title_card,
+        add_lower_third,
+        add_lower_third_vertical,
         add_subscribe_bump,
+        add_title_card,
+        render_template,
         render_template_with_ai_bg,
     )
     # add_end_screen not available in HyperFrames bridge — stub it
@@ -80,12 +108,13 @@ if _BACKEND == "hyperframes":
 else:
     # Default: Editframe
     from .editframe_bridge import (
-        render_template,
-        add_lower_third,
         add_chapter_intro,
-        add_title_card,
-        add_subscribe_bump,
         add_end_screen,
+        add_lower_third,
+        add_lower_third_vertical,
+        add_subscribe_bump,
+        add_title_card,
+        render_template,
         render_template_with_ai_bg,
     )
 
@@ -94,6 +123,7 @@ __all__ = [
     # Auto-routed (respects MOTION_GRAPHICS_BACKEND)
     "render_template",
     "add_lower_third",
+    "add_lower_third_vertical",
     "add_chapter_intro",
     "add_title_card",
     "add_subscribe_bump",
@@ -102,6 +132,7 @@ __all__ = [
     # Explicit Editframe
     "ef_render_template",
     "ef_add_lower_third",
+    "ef_add_lower_third_vertical",
     "ef_add_chapter_intro",
     "ef_add_title_card",
     "ef_add_subscribe_bump",
@@ -110,6 +141,7 @@ __all__ = [
     # Explicit HyperFrames
     "hf_render_template",
     "hf_add_lower_third",
+    "hf_add_lower_third_vertical",
     "hf_add_chapter_intro",
     "hf_add_title_card",
     "hf_add_subscribe_bump",

@@ -13,7 +13,7 @@ Module API:
     cap    = generator.generate_caption(transcript, style, platform="instagram")
 """
 
-from .generator import generate_title_options, generate_description, generate_caption, analyze_style
+from .generator import analyze_style, generate_caption, generate_description, generate_title_options
 from .style_profile import StyleProfile, load_style_profile, save_style_profile
 
 __all__ = [

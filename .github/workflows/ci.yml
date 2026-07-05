@@ -43,10 +43,36 @@ jobs:
       - name: Verify Python modules import
         run: |
           python3 -c "from modules.captions import generator; print('captions OK')"
+          python3 -c "from modules.captions.hooks import extract_hooks; print('hooks OK')"
           python3 -c "from modules.timestamps import generate_timestamps; print('timestamps OK')"
-          python3 -c "from modules.thumbnails import extractor, composer; print('thumbnails OK')"
+          python3 -c "from modules.thumbnails import extractor, composer, compose_thumbnail_variants; print('thumbnails OK')"
           python3 -c "from modules.motion_graphics import bridge; print('motion_graphics OK')"
+          python3 -c "from modules.motion_graphics import add_lower_third_vertical; print('motion_graphics vertical OK')"
           python3 -c "from modules.verify import verify_render; print('verify OK')"
+
+      - name: Test motion graphics preview
+        run: |
+          python3 -m modules.motion_graphics preview --template templates/editframe/lower-third.html --output /tmp/preview_ef.html
+          python3 -m modules.motion_graphics preview --template templates/lower-third.html --output /tmp/preview_hf.html
+
+      - name: Test caption hooks
+        run: |
+          python3 - <<'PY'
+          import json
+          from modules.captions.hooks import extract_hooks
+          edl = {
+              "ranges": [
+                  {"start": 0, "end": 5, "beat": "INTRO"},
+                  {"start": 5, "end": 10, "beat": "PROBLEM"},
+              ],
+              "total_duration_s": 10,
+          }
+          with open("/tmp/hooks_edl.json", "w") as f:
+              json.dump(edl, f)
+          hooks = extract_hooks("This is the intro. Here is the big problem.", "/tmp/hooks_edl.json", top_n=2)
+          assert len(hooks) == 2
+          print("hooks OK")
+          PY
 
       - name: Test render quality gate
         run: |

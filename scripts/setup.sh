@@ -209,13 +209,21 @@ python3 -c "from modules.timestamps import generate_timestamps; print('timestamp
   && ok "modules.timestamps imports correctly" \
   || { fail "modules.timestamps import failed"; ERRORS=$((ERRORS + 1)); }
 
-python3 -c "from modules.thumbnails import extractor, composer; print('thumbnails OK')" 2>/dev/null \
+python3 -c "from modules.thumbnails import extractor, composer, compose_thumbnail_variants; print('thumbnails OK')" 2>/dev/null \
   && ok "modules.thumbnails imports correctly" \
   || { fail "modules.thumbnails import failed"; ERRORS=$((ERRORS + 1)); }
+
+python3 -c "from modules.captions.hooks import extract_hooks; print('hooks OK')" 2>/dev/null \
+  && ok "modules.captions.hooks imports correctly" \
+  || { fail "modules.captions.hooks import failed"; ERRORS=$((ERRORS + 1)); }
 
 python3 -c "from modules.motion_graphics import bridge; print('motion_graphics OK')" 2>/dev/null \
   && ok "modules.motion_graphics imports correctly" \
   || { fail "modules.motion_graphics import failed"; ERRORS=$((ERRORS + 1)); }
+
+python3 -c "from modules.motion_graphics import add_lower_third_vertical; print('motion_graphics vertical OK')" 2>/dev/null \
+  && ok "modules.motion_graphics vertical imports correctly" \
+  || { fail "modules.motion_graphics vertical import failed"; ERRORS=$((ERRORS + 1)); }
 
 python3 -c "from modules.verify import verify_render; print('verify OK')" 2>/dev/null \
   && ok "modules.verify imports correctly" \

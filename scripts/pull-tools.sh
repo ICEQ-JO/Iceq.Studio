@@ -30,7 +30,13 @@ pull_repo() {
 
     if [ -d "$dir/.git" ]; then
         echo "── Updating $(basename "$dir") ────────────────────────────────────────────"
-        (cd "$dir" && git pull --depth 1 --rebase) && ok "Updated $dir" || warn "Could not update $dir"
+        if (cd "$dir" && git pull --depth 1 --rebase); then
+            ok "Updated $dir"
+        else
+            warn "Could not update $dir — re-cloning fresh copy"
+            rm -rf "$dir"
+            git clone --depth 1 "$url" "$dir" && ok "Re-cloned $dir" || { fail "Failed to clone $dir"; return 1; }
+        fi
     else
         echo "── Cloning $(basename "$dir") ─────────────────────────────────────────────"
         rm -rf "$dir"

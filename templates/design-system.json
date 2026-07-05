@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "name": "Iceq Studio Default",
+    "version": "1.0.0"
+  },
+  "accent-color": "#FF5A00",
+  "bg-color": "#0A0A0A",
+  "surface-color": "rgba(10,10,10,0.88)",
+  "text-color": "#FFFFFF",
+  "text-muted-color": "#C0C0C0",
+  "youtube-red": "#FF0000",
+  "font": "Inter",
+  "title-size": "48px",
+  "subtitle-size": "24px",
+  "chapter-size": "72px",
+  "line-height-tight": "1.1",
+  "line-height-normal": "1.2",
+  "margin": "80px",
+  "safe-area": "120px",
+  "border-radius": "4px",
+  "accent-bar-width": "6px",
+  "animation-easing": "cubic-bezier(0.22,1,0.36,1)",
+  "animation-duration-in": "0.55s",
+  "animation-duration-out": "0.30s"
+}

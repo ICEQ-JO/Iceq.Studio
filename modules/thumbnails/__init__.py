@@ -17,8 +17,13 @@ Module API:
     out    = composer.compose_thumbnail_pil(best, title="My Title", output_path="thumbnail.png")
 """
 
+from .composer import (
+    compose_thumbnail_ai_bg,
+    compose_thumbnail_hyperframes,
+    compose_thumbnail_pil,
+    compose_thumbnail_variants,
+)
 from .extractor import extract_candidate_frames, pick_best_frame
-from .composer import compose_thumbnail_pil, compose_thumbnail_hyperframes, compose_thumbnail_ai_bg
 
 __all__ = [
     "extract_candidate_frames",
@@ -26,4 +31,5 @@ __all__ = [
     "compose_thumbnail_pil",
     "compose_thumbnail_hyperframes",
     "compose_thumbnail_ai_bg",
+    "compose_thumbnail_variants",
 ]

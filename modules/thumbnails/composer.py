@@ -24,7 +24,6 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-
 # ─────────────────────────────────────────────────────────────────────────────
 # PIL Compositor
 # ─────────────────────────────────────────────────────────────────────────────
@@ -74,7 +73,7 @@ def compose_thumbnail_pil(
         Absolute path to the saved thumbnail PNG.
     """
     try:
-        from PIL import Image, ImageDraw, ImageFont, ImageFilter
+        from PIL import Image, ImageDraw, ImageFont
     except ImportError:
         raise RuntimeError("Pillow is not installed. Run: pip install pillow")
 
@@ -313,6 +312,53 @@ def compose_thumbnail_ai_bg(
     )
 
 
+def compose_thumbnail_variants(
+    base_frame: str | Path,
+    titles: list[str],
+    subtitle: str | None = None,
+    output_dir: str | Path | None = None,
+    accent_colors: list[tuple[int, int, int]] | None = None,
+) -> list[str]:
+    """
+    Generate A/B thumbnail variants from the same base frame with different titles.
+
+    Args:
+        base_frame: Path to the source frame.
+        titles: List of title texts (one per variant).
+        subtitle: Optional subtitle shared across variants.
+        output_dir: Directory for output PNGs. Defaults to base_frame's parent.
+        accent_colors: Optional list of RGB tuples, one per variant.
+
+    Returns:
+        List of saved PNG paths, one per variant.
+    """
+    base_frame = Path(base_frame)
+    out_dir = Path(output_dir) if output_dir else base_frame.parent
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    default_colors = [
+        (255, 90, 0),    # orange
+        (0, 150, 255),   # blue
+        (255, 220, 0),   # yellow
+    ]
+    colors = accent_colors or default_colors
+
+    paths: list[str] = []
+    for i, title in enumerate(titles):
+        color = colors[i % len(colors)]
+        out_path = out_dir / f"thumbnail_variant_{i + 1}.png"
+        path = compose_thumbnail_pil(
+            base_frame=base_frame,
+            title=title,
+            subtitle=subtitle,
+            output_path=out_path,
+            style={"accent_color": color},
+        )
+        paths.append(path)
+
+    return paths
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # CLI entry point
 # ─────────────────────────────────────────────────────────────────────────────
@@ -333,6 +379,7 @@ def main() -> None:
     gen.add_argument("--method", default="pil", choices=["pil", "hyperframes"])
     gen.add_argument("--template", default="", help="Path to HyperFrames template (for --method hyperframes)")
     gen.add_argument("--timestamps", nargs="*", type=float, help="Specific timestamps to sample (seconds)")
+    gen.add_argument("--variants", nargs="+", help="Generate A/B variants with these title texts")
 
     args = parser.parse_args()
 
@@ -366,6 +413,20 @@ def main() -> None:
 
     best = pick_best_frame(frames, criteria="sharpness")
     print(f"🎞  Best frame: {best}")
+
+    if args.variants:
+        variant_paths = compose_thumbnail_variants(
+            base_frame=best,
+            titles=args.variants,
+            subtitle=args.subtitle or None,
+            output_dir=edit_dir,
+        )
+        for path in variant_paths:
+            print(f"✅ Thumbnail variant saved → {path}")
+        # Also save the first variant as the default thumbnail.png
+        import shutil as _shutil
+        _shutil.copy(variant_paths[0], edit_dir / "thumbnail.png")
+        return
 
     out_path = edit_dir / "thumbnail.png"
 

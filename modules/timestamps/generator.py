@@ -25,7 +25,6 @@ import json
 from pathlib import Path
 from typing import Literal
 
-
 # Beat label → human-readable chapter name mappings
 # Add your own or override with the --label-map flag
 DEFAULT_BEAT_LABELS: dict[str, str] = {
@@ -153,7 +152,10 @@ def generate_timestamps(
     import datetime
     today = datetime.date.today().isoformat()
     
-    output = f"---\ntype: video_timestamps\nstatus: draft\ndate: {today}\ntags: [video/timestamps]\n---\n# YouTube Chapters\n\n{core_output}\n"
+    output = (
+        f"---\ntype: video_timestamps\nstatus: draft\ndate: {today}\n"
+        f"tags: [video/timestamps]\n---\n# YouTube Chapters\n\n{core_output}\n"
+    )
 
     # Save to file
     out_path = edit_dir / "timestamps.md"

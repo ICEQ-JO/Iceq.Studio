@@ -37,7 +37,7 @@ import json
 import shutil
 import subprocess
 from pathlib import Path
-
+from typing import Any
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Internal helpers
@@ -50,6 +50,24 @@ def _workspace_root() -> Path:
 
 def _ef_templates_dir() -> Path:
     return _workspace_root() / "templates" / "editframe"
+
+
+def _camel_case(name: str) -> str:
+    """Convert kebab-case token names to camelCase for Editframe data keys."""
+    parts = name.split("-")
+    return parts[0] + "".join(p.capitalize() for p in parts[1:])
+
+
+def _load_design_tokens() -> dict[str, str]:
+    """Load shared design tokens from templates/design-system.json (camelCase keys)."""
+    path = _workspace_root() / "templates" / "design-system.json"
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return {_camel_case(k): str(v) for k, v in data.items() if not k.startswith("_")}
+    except (json.JSONDecodeError, OSError):
+        return {}
 
 
 def _check_requirements() -> None:
@@ -92,8 +110,8 @@ def _run_editframe(
     ws = _workspace_root()
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Merge duration into data so compositions can read it
-    render_data = {"duration": duration, **data}
+    # Merge design tokens (base) + user data (override) + duration
+    render_data: dict[str, Any] = {"duration": duration, **_load_design_tokens(), **data}
 
     cmd = [
         "npx", "--yes", "@editframe/cli", "render",
@@ -228,6 +246,38 @@ def add_lower_third(
         },
         output_mp4=_slot_path(output_dir, slot_id),
         duration=duration,
+    )
+
+
+def add_lower_third_vertical(
+    name: str,
+    title: str,
+    output_dir: str | Path,
+    slot_id: str = "ltv1",
+    duration: float = 4.0,
+    accent_color: str = "#FF5A00",
+    bg_color: str = "rgba(10,10,10,0.88)",
+    font: str = "Inter",
+) -> str:
+    """
+    Render a 9:16 vertical lower-third overlay for Shorts/Reels.
+
+    Args: same as add_lower_third.
+    Returns: Absolute path to render.mp4.
+    """
+    return render_template(
+        template_path=_ef_templates_dir() / "lower-third-vertical.html",
+        vars={
+            "title":       name,
+            "subtitle":    title,
+            "accentColor": accent_color,
+            "bgColor":     bg_color,
+            "font":        font,
+        },
+        output_mp4=_slot_path(output_dir, slot_id),
+        duration=duration,
+        width=1080,
+        height=1920,
     )
 
 
