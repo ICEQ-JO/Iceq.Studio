@@ -43,6 +43,10 @@ node_modules/
 .hyperframes/
 packages/*/dist/
 
+# Vendored tools (pulled by scripts/setup.sh or scripts/pull-tools.sh)
+tools/video-use/
+tools/hyperframes/
+
 # secrets
 *.pem
 *.key

@@ -25,6 +25,19 @@ echo ""
 
 ERRORS=0
 
+# ── 0. Pull Vendored Tools ────────────────────────────────────────────────────
+
+echo "── Pulling vendored tools ────────────────────────────────────────────"
+
+if [ -x "scripts/pull-tools.sh" ]; then
+  ./scripts/pull-tools.sh && ok "Vendored tools present" || { fail "Could not pull vendored tools"; ERRORS=$((ERRORS + 1)); }
+else
+  fail "scripts/pull-tools.sh not found. Re-clone the repository."
+  ERRORS=$((ERRORS + 1))
+fi
+
+echo ""
+
 # ── 1. System Requirements ───────────────────────────────────────────────────
 
 echo "── Checking system requirements ──────────────────────────────────────"
@@ -87,6 +100,14 @@ echo ""
 echo "── Installing Python dependencies ────────────────────────────────────"
 
 if command -v uv >/dev/null 2>&1; then
+  # uv requires an active virtual environment unless passed --system
+  if [ -z "${VIRTUAL_ENV:-}" ] && [ ! -d ".venv" ]; then
+    uv venv --quiet && ok "Created .venv"
+  fi
+  if [ -f ".venv/bin/activate" ]; then
+    # shellcheck source=/dev/null
+    source .venv/bin/activate
+  fi
   uv pip install -e . --quiet && ok "Python deps installed (uv)" || { fail "uv install failed"; ERRORS=$((ERRORS + 1)); }
 elif command -v pip3 >/dev/null 2>&1; then
   pip3 install -e . --quiet && ok "Python deps installed (pip)" || { fail "pip install failed"; ERRORS=$((ERRORS + 1)); }
@@ -98,10 +119,21 @@ fi
 # video-use Python deps
 if [ -f "tools/video-use/pyproject.toml" ]; then
   if command -v uv >/dev/null 2>&1; then
-    (cd tools/video-use && uv pip install -e . --quiet) && ok "video-use Python deps" || warn "video-use dep install had issues"
+    if [ -f ".venv/bin/activate" ]; then
+      # shellcheck source=/dev/null
+      (source .venv/bin/activate && cd tools/video-use && uv pip install -e . --quiet) && ok "video-use Python deps" || warn "video-use dep install had issues"
+    else
+      (cd tools/video-use && uv pip install -e . --quiet) && ok "video-use Python deps" || warn "video-use dep install had issues"
+    fi
   else
     (cd tools/video-use && pip3 install -e . --quiet) && ok "video-use Python deps" || warn "video-use dep install had issues"
   fi
+fi
+
+# Ensure the virtual environment is active for the rest of the script
+if [ -f ".venv/bin/activate" ]; then
+  # shellcheck source=/dev/null
+  source .venv/bin/activate
 fi
 
 echo ""
@@ -184,6 +216,10 @@ python3 -c "from modules.thumbnails import extractor, composer; print('thumbnail
 python3 -c "from modules.motion_graphics import bridge; print('motion_graphics OK')" 2>/dev/null \
   && ok "modules.motion_graphics imports correctly" \
   || { fail "modules.motion_graphics import failed"; ERRORS=$((ERRORS + 1)); }
+
+python3 -c "from modules.verify import verify_render; print('verify OK')" 2>/dev/null \
+  && ok "modules.verify imports correctly" \
+  || { fail "modules.verify import failed"; ERRORS=$((ERRORS + 1)); }
 
 if [ -f "tools/video-use/helpers/timeline_view.py" ]; then
   python3 tools/video-use/helpers/timeline_view.py --help >/dev/null 2>&1 \

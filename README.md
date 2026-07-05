@@ -39,6 +39,7 @@ Iceq Studio is designed to be used with any LLM coding agent (Cursor, Claude Cod
    ```bash
    ./scripts/setup.sh
    ```
+   This installs Python/Node dependencies and pulls the vendored `video-use` and `hyperframes` tools into `tools/`.
 
 3. **Configure Environment:**
    Create a `.env` file in the root directory:

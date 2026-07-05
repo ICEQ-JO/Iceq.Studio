@@ -14,8 +14,8 @@
     "ef:preview": "editframe preview"
   },
   "dependencies": {
-    "hyperframes": "latest",
-    "@editframe/cli": "latest"
+    "hyperframes": "0.7.33",
+    "@editframe/cli": "0.57.26"
   },
   "devDependencies": {}
 }

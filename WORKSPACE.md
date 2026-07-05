@@ -108,15 +108,19 @@ The video-use EDL format already has an `overlays` key. Motion graphics slots pl
 
 ## Upstream Vendoring Strategy
 
-`tools/video-use` and `tools/hyperframes` are added as **git subtrees** (not submodules). This means:
+`tools/video-use` and `tools/hyperframes` are **vendored upstream copies**. They are pulled automatically by `scripts/setup.sh` (via `scripts/pull-tools.sh`) and are ignored by git so the workspace repo stays small and upstream history is preserved.
 
-- A single `git clone` gets the full workspace with no `--recursive` flag needed.
-- To pull upstream updates:
+- After cloning, run `./scripts/setup.sh` to fetch the tools.
+- To pull the latest upstream versions manually:
+  ```bash
+  ./scripts/pull-tools.sh
+  ```
+- If you prefer git subtrees and have `git-subtree` installed, you can still use:
   ```bash
   git subtree pull --prefix tools/video-use https://github.com/browser-use/video-use.git main --squash
   git subtree pull --prefix tools/hyperframes https://github.com/heygen-com/hyperframes.git main --squash
   ```
-- Never modify files in `tools/` — changes will be overwritten on the next subtree pull.
+- Never modify files in `tools/` — changes will be overwritten on the next pull.
 
 ---
 

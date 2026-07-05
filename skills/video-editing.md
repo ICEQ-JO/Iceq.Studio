@@ -52,6 +52,9 @@ python tools/video-use/helpers/render.py edit/edl.json -o edit/preview.mp4 --pre
 
 # Render final (full quality, burn subtitles inline)
 python tools/video-use/helpers/render.py edit/edl.json -o edit/final.mp4 --build-subtitles
+
+# Verify render quality (duration, black frames, silence, loudness, subtitles)
+python -m modules.verify --edl edit/edl.json --video edit/final.mp4 --out edit/verify
 ```
 
 ## EDL Format Reference
